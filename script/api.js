@@ -34,7 +34,7 @@ const request = (path, method = 'GET', body) => (
 ));
 
 export default {
-    fillGameData: id => request(`games/${id}/fill`),
+    fillGameData: (id, giantBombIndex = 0) => request(`games/${id}/fill/${giantBombIndex}`),
     loadCategories: () => request('categories'),
     loadDlcs: () => request('dlcs'),
     loadGames: () => request('games'),

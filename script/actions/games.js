@@ -3,8 +3,8 @@ import api from 'api';
 export const LOAD_GAMES = 'LOAD_GAMES';
 export const SAVE_GAME = 'SAVE_GAME';
 
-export const fillGameData = id => dispatch => (
-    api.fillGameData(id).then((data) => {
+export const fillGameData = (id, giantBombIndex) => dispatch => (
+    api.fillGameData(id, giantBombIndex).then((data) => {
         dispatch({
             type: SAVE_GAME,
             payload: { id, data },

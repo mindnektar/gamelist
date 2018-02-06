@@ -23,7 +23,7 @@ app.get('/api/games', (request, response) => {
     });
 });
 
-app.get('/api/games/:id/fill', (request, response) => {
+app.get('/api/games/:id/fill/:giantBombIndex', (request, response) => {
     fs.readFile(systemsPath, 'utf8', (_, systems) => {
         fs.readFile(gamesPath, 'utf8', (__, data) => {
             const GIANTBOMB_KEY = 'aebe8a5bc71b49509966b5ea50e7951d79d99cd8';
@@ -44,7 +44,7 @@ app.get('/api/games/:id/fill', (request, response) => {
                             result.json()
                         ))
                         .then(({ results }) => (
-                            results[0].guid
+                            results[request.params.giantBombIndex || 0].guid
                         ))
                         .then(guid => (
                             fetch(`https://www.giantbomb.com/api/game/${guid}?api_key=${GIANTBOMB_KEY}&field_list=deck,original_release_date,developers,genres&format=json`)
@@ -58,24 +58,41 @@ app.get('/api/games/:id/fill', (request, response) => {
                             const developerMap = {
                                 '2K Marin': '2K Games',
                                 '3 Minute Games, LLC': '3 Minute Games',
+                                'AlphaDream Corporation, Ltd.': 'AlphaDream',
+                                'Atlus Co., Ltd.': 'Atlus',
                                 'Bethesda Game Studios': 'Bethesda',
+                                'Camelot Software Planning': 'Camelot',
                                 'cavia inc.': 'Cavia',
                                 'Crystal Dynamics, Inc.': 'Crystal Dynamics',
+                                'Dimps Corporation': 'Dimps',
                                 'DONTNOD Entertainment': 'DONTNOD',
                                 'Eidos-Montréal': 'Eidos',
+                                'Flagship Co., Ltd.': 'Flagship',
+                                'Fountainhead Entertainment, Inc.': 'Fountainhead',
+                                'Game Freak, Inc.': 'Game Freak',
+                                'Gameloft S.A.': 'Gameloft',
                                 'Gearbox Software LLC': 'Gearbox',
                                 'Grasshopper Manufacture inc.': 'Grasshopper',
+                                'HAL Laboratory, Inc.': 'HAL Laboratory',
                                 'Harmonix Music Systems, Inc.': 'Harmonix',
+                                'Hudson Entertainment, Inc.': 'Hudson',
                                 'Human Head Studios, Inc.': 'Human Head',
-                                'Klei Entertainment Inc.': 'Klei',
+                                'iNiS Corp.': 'iNiS',
+                                'Intelligent Systems Co., Ltd.': 'Intelligent Systems',
                                 'Inti Creates Co., Ltd.': 'Inti Creates',
+                                'Klei Entertainment Inc.': 'Klei',
+                                'Konami Computer Entertainment Tokyo': 'Konami',
+                                'Level-5 Inc.': 'Level-5',
                                 'Monolith Productions, Inc.': 'Monolith Productions',
                                 'Neversoft Entertainment': 'Neversoft',
                                 'Nintendo EAD': 'Nintendo',
                                 'Nintendo EPD': 'Nintendo',
+                                'Nintendo R&D1': 'Nintendo',
+                                'Now Production Co., Ltd.': 'Now Production',
                                 'Number None Inc': 'Number None',
                                 'Obsidian Entertainment': 'Obsidian',
                                 'Pandemic Studios': 'Pandemic',
+                                'Paon Corporation, Ltd.': 'Paon',
                                 'PopCap Games, Inc.': 'PopCap Games',
                                 'Rare, Ltd.': 'Rare',
                                 'RedLynx Ltd': 'RedLynx',
@@ -83,6 +100,7 @@ app.get('/api/games/:id/fill', (request, response) => {
                                 'Rockstar North': 'Rockstar',
                                 'Rockstar San Diego': 'Rockstar',
                                 'Rocksteady Studios Ltd': 'Rocksteady',
+                                'Silicon Knights, Inc.': 'Silicon Knights',
                                 'Sumo Digital Ltd.': 'Sumo Digital',
                                 'Taito Corporation': 'Taito',
                                 'Techland Sp. z o.o.': 'Techland',
@@ -91,6 +109,7 @@ app.get('/api/games/:id/fill', (request, response) => {
                                 'Ubisoft Montreal Studios': 'Ubisoft',
                                 'Ubisoft Shanghai Studios': 'Ubisoft',
                                 'Valve Corporation': 'Valve',
+                                'WayForward Technologies': 'WayForward',
                                 'YAGER Development GmbH': 'Yager Development',
                             };
 

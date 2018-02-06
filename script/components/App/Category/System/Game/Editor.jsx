@@ -20,8 +20,8 @@ class Editor extends React.Component {
         });
     }
 
-    fillGameData = () => {
-        this.props.fillGameData(this.props.id).then((game) => {
+    fillHandler = giantBombIndex => () => {
+        this.props.fillGameData(this.props.id, giantBombIndex).then((game) => {
             this.setState(editableAttributes.reduce((result, current) => ({
                 ...result,
                 [current]: game[current],
@@ -50,9 +50,16 @@ class Editor extends React.Component {
 
                 <div
                     className="game__editor-fill"
-                    onTouchTap={this.fillGameData}
+                    onTouchTap={this.fillHandler(0)}
                 >
                     Fill
+                </div>
+
+                <div
+                    className="game__editor-fill"
+                    onTouchTap={this.fillHandler(1)}
+                >
+                    Fill (alternative)
                 </div>
             </div>
         );
