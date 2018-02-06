@@ -71,6 +71,8 @@ app.get('/api/games/:id/fill', (request, response) => {
                                 'Inti Creates Co., Ltd.': 'Inti Creates',
                                 'Monolith Productions, Inc.': 'Monolith Productions',
                                 'Neversoft Entertainment': 'Neversoft',
+                                'Nintendo EAD': 'Nintendo',
+                                'Nintendo EPD': 'Nintendo',
                                 'Number None Inc': 'Number None',
                                 'Obsidian Entertainment': 'Obsidian',
                                 'Pandemic Studios': 'Pandemic',
