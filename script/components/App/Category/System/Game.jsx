@@ -47,6 +47,12 @@ class Game extends React.Component {
                 >
                     <div className="game__title">
                         {this.props.title}
+
+                        {this.props.dlcs.length > 0 &&
+                            <span className="game__title-dlc-count">
+                                {this.props.dlcs.length} DLC{this.props.dlcs.length !== 1 ? 's' : ''}
+                            </span>
+                        }
                     </div>
 
                     <div className="game__genre">
@@ -78,7 +84,7 @@ class Game extends React.Component {
                                 {this.props.youTubeId ? (
                                     <iframe
                                         className="game__video"
-                                        src={`http://www.youtube.com/embed/${this.props.youTubeId}`}
+                                        src={`https://www.youtube.com/embed/${this.props.youTubeId}`}
                                         type="text/html"
                                     />
                                 ) : (
@@ -87,6 +93,22 @@ class Game extends React.Component {
 
                                 <div className="game__description">
                                     {this.props.description}
+
+                                    {this.props.dlcs.length > 0 &&
+                                        <div className="game__dlcs">
+                                            <div className="game__dlcs-header">DLCs</div>
+
+                                            <div>
+                                                {this.props.dlcs.map(dlc =>
+                                                    <div className="game__dlc">
+                                                        <div>{dlc.title}</div>
+
+                                                        <Rating value={dlc.rating} />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    }
                                 </div>
                             </div>
                         )}
@@ -113,6 +135,7 @@ Game.defaultProps = {
 Game.propTypes = {
     description: PropTypes.string,
     developer: PropTypes.string.isRequired,
+    dlcs: PropTypes.array.isRequired,
     genre: PropTypes.string.isRequired,
     id: PropTypes.number.isRequired,
     rating: PropTypes.number.isRequired,
@@ -123,7 +146,11 @@ Game.propTypes = {
 };
 
 export default connectWithRouter(
-    null,
+    (state, ownProps) => ({
+        dlcs: Object.values(state.dlcs)
+            .filter(dlc => dlc.parent === ownProps.id)
+            .sort((a, b) => a.title.localeCompare(b.title)),
+    }),
     {
         saveGame,
     },

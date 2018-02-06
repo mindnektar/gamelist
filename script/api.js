@@ -36,6 +36,7 @@ const request = (path, method = 'GET', body) => (
 export default {
     fillGameData: id => request(`games/${id}/fill`),
     loadCategories: () => request('categories'),
+    loadDlcs: () => request('dlcs'),
     loadGames: () => request('games'),
     loadSystems: () => request('systems'),
     saveGame: (id, data) => request('games', 'PATCH', { id, data }),

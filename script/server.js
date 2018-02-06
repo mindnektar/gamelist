@@ -57,10 +57,12 @@ app.get('/api/games/:id/fill', (request, response) => {
 
                             const developerMap = {
                                 '2K Marin': '2K Games',
+                                '3 Minute Games, LLC': '3 Minute Games',
                                 'Bethesda Game Studios': 'Bethesda',
                                 'cavia inc.': 'Cavia',
                                 'Crystal Dynamics, Inc.': 'Crystal Dynamics',
                                 'DONTNOD Entertainment': 'DONTNOD',
+                                'Eidos-Montréal': 'Eidos',
                                 'Gearbox Software LLC': 'Gearbox',
                                 'Grasshopper Manufacture inc.': 'Grasshopper',
                                 'Harmonix Music Systems, Inc.': 'Harmonix',
@@ -74,12 +76,14 @@ app.get('/api/games/:id/fill', (request, response) => {
                                 'Pandemic Studios': 'Pandemic',
                                 'PopCap Games, Inc.': 'PopCap Games',
                                 'Rare, Ltd.': 'Rare',
+                                'RedLynx Ltd': 'RedLynx',
                                 'Remedy Entertainment Ltd.': 'Remedy',
                                 'Rockstar North': 'Rockstar',
                                 'Rockstar San Diego': 'Rockstar',
                                 'Rocksteady Studios Ltd': 'Rocksteady',
                                 'Sumo Digital Ltd.': 'Sumo Digital',
                                 'Taito Corporation': 'Taito',
+                                'Techland Sp. z o.o.': 'Techland',
                                 'tri-Crescendo Inc.': 'tri-Crescendo',
                                 'Ubisoft Montpellier Studios': 'Ubisoft',
                                 'Ubisoft Montreal Studios': 'Ubisoft',
@@ -96,7 +100,12 @@ app.get('/api/games/:id/fill', (request, response) => {
                                 release: results.original_release_date ?
                                     parseInt(results.original_release_date.substring(0, 4), 10) :
                                     '',
-                                developer: developerMap[results.developers[0].name] || results.developers[0].name,
+                                developer: results.developers ?
+                                    (
+                                        developerMap[results.developers[0].name] ||
+                                        results.developers[0].name
+                                    ) :
+                                    '',
                                 genre: results.genres.map(genre => genre.name).join(','),
                                 youTubeId: items[0].id.videoId,
                             };
@@ -125,6 +134,12 @@ app.patch('/api/games', (request, response) => {
         fs.writeFile(gamesPath, JSON.stringify(games), () => {
             response.sendStatus(204);
         });
+    });
+});
+
+app.get('/api/dlcs', (request, response) => {
+    fs.readFile('script/server/db/dlcs.json', (error, data) => {
+        response.send(data);
     });
 });
 

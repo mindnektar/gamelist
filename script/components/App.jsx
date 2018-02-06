@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import connectWithRouter from 'hoc/connectWithRouter';
 import { loadGames } from 'actions/games';
+import { loadDlcs } from 'actions/dlcs';
 import { loadSystems } from 'actions/systems';
 import { loadCategories } from 'actions/categories';
 import Category from './App/Category';
@@ -13,16 +14,14 @@ class App extends React.Component {
     }
 
     componentWillMount() {
-        Promise.all(
-            [
-                this.props.loadGames(),
-                this.props.loadSystems(),
-                this.props.loadCategories(),
-            ],
-            () => {
-                this.setState({ loaded: true });
-            }
-        );
+        Promise.all([
+            this.props.loadGames(),
+            this.props.loadDlcs(),
+            this.props.loadSystems(),
+            this.props.loadCategories(),
+        ]).then(() => {
+            this.setState({ loaded: true });
+        });
     }
 
     filteredCategories() {
@@ -31,7 +30,7 @@ class App extends React.Component {
     }
 
     render() {
-        return (
+        return this.state.loaded && (
             <div className="gamelist">
                 <Header />
 
@@ -48,6 +47,7 @@ class App extends React.Component {
 
 App.propTypes = {
     loadCategories: PropTypes.func.isRequired,
+    loadDlcs: PropTypes.func.isRequired,
     loadGames: PropTypes.func.isRequired,
     loadSystems: PropTypes.func.isRequired,
     categories: PropTypes.array.isRequired,
@@ -59,6 +59,7 @@ export default connectWithRouter(
     }),
     {
         loadCategories,
+        loadDlcs,
         loadGames,
         loadSystems,
     },
