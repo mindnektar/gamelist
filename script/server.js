@@ -114,12 +114,6 @@ app.get('/api/systems', (request, response) => {
     });
 });
 
-app.get('/api/categories', (request, response) => {
-    fs.readFile('script/server/db/categories.json', (error, data) => {
-        response.send(data);
-    });
-});
-
 app.listen(4001, () => {
     console.log('Server running at http://localhost:4001');
 });

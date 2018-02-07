@@ -4,8 +4,7 @@ import connectWithRouter from 'hoc/connectWithRouter';
 import { loadGames } from 'actions/games';
 import { loadDlcs } from 'actions/dlcs';
 import { loadSystems } from 'actions/systems';
-import { loadCategories } from 'actions/categories';
-import Category from './App/Category';
+import System from './App/System';
 import Header from './App/Header';
 
 class App extends React.Component {
@@ -18,15 +17,14 @@ class App extends React.Component {
             this.props.loadGames(),
             this.props.loadDlcs(),
             this.props.loadSystems(),
-            this.props.loadCategories(),
         ]).then(() => {
             this.setState({ loaded: true });
         });
     }
 
     filteredCategories() {
-        return this.props.categories
-            .sort((a, b) => a.name.localeCompare(b.name));
+        return Object.values(this.props.systems)
+            .sort((a, b) => a.order - b.order);
     }
 
     render() {
@@ -35,7 +33,7 @@ class App extends React.Component {
                 <Header />
 
                 {this.filteredCategories().map(category =>
-                    <Category
+                    <System
                         key={category.id}
                         {...category}
                     />
@@ -46,19 +44,17 @@ class App extends React.Component {
 }
 
 App.propTypes = {
-    loadCategories: PropTypes.func.isRequired,
     loadDlcs: PropTypes.func.isRequired,
     loadGames: PropTypes.func.isRequired,
     loadSystems: PropTypes.func.isRequired,
-    categories: PropTypes.array.isRequired,
+    systems: PropTypes.object.isRequired,
 };
 
 export default connectWithRouter(
     state => ({
-        categories: state.categories,
+        systems: state.systems,
     }),
     {
-        loadCategories,
         loadDlcs,
         loadGames,
         loadSystems,
