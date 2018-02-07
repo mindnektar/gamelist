@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import connectWithRouter from 'hoc/connectWithRouter';
 import { deleteGame, fillGameData } from 'actions/games';
 import TextField from 'TextField';
+import Button from 'Button';
 
 const editableAttributes = [
     'title', 'compilation', 'rating', 'genre', 'developer', 'release', 'youTubeId', 'description',
@@ -79,12 +80,7 @@ class Editor extends React.Component {
                     </TextField>
                 </div>
 
-                <div
-                    className="game__editor-fill"
-                    onTouchTap={this.fillGameData}
-                >
-                    Fill
-                </div>
+                <Button onTouchTap={this.fillGameData}>Fill</Button>
 
                 <div
                     className="game__delete-button material-icons"

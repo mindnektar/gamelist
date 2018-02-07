@@ -6,6 +6,10 @@ class Select extends React.Component {
     render() {
         return (
             <div className="ui-select">
+                <div className="ui-select__label">
+                    {this.props.label}
+                </div>
+
                 <select
                     onChange={this.props.onChange}
                     value={this.props.value}
@@ -26,11 +30,12 @@ class Select extends React.Component {
 
 Select.propTypes = {
     items: PropTypes.arrayOf(PropTypes.shape({
-        key: PropTypes.number.isRequired,
+        key: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
         label: PropTypes.string.isRequired,
     })).isRequired,
+    label: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
-    value: PropTypes.number.isRequired,
+    value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
 };
 
 export default connectWithRouter(

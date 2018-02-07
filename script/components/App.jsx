@@ -4,7 +4,9 @@ import connectWithRouter from 'hoc/connectWithRouter';
 import { loadGames } from 'actions/games';
 import { loadDlcs } from 'actions/dlcs';
 import { loadSystems } from 'actions/systems';
-import System from './App/System';
+import { changeGrouping } from 'actions/ui';
+import Select from 'Select';
+import Group from './App/Group';
 import Header from './App/Header';
 import AddButton from './App/AddButton';
 
@@ -23,9 +25,41 @@ class App extends React.Component {
         });
     }
 
-    getSystems() {
-        return Object.values(this.props.systems)
-            .sort((a, b) => a.order - b.order);
+    getGroups() {
+        if (this.props.groupBy === 'system') {
+            return Object.values(this.props.systems)
+                .sort((a, b) => a.order - b.order);
+        }
+
+        return Object.values(this.props.games)
+            .reduce((result, current) => {
+                if (!result.find(group => `${group.name}` === `${current[this.props.groupBy]}`)) {
+                    return [
+                        ...result,
+                        {
+                            id: current[this.props.groupBy],
+                            name: current[this.props.groupBy],
+                        },
+                    ];
+                }
+
+                return result;
+            }, [])
+            .sort((a, b) => {
+                if (typeof a.name === 'number') {
+                    if (this.props.groupBy === 'rating') {
+                        return b.name - a.name;
+                    }
+
+                    return a.name - b.name;
+                }
+
+                return a.name.localeCompare(b.name);
+            });
+    }
+
+    changeGrouping = (event) => {
+        this.props.changeGrouping(event.target.value);
     }
 
     render() {
@@ -37,10 +71,22 @@ class App extends React.Component {
                     <AddButton />
                 }
 
-                {this.getSystems().map(category =>
-                    <System
-                        key={category.id}
-                        {...category}
+                <Select
+                    items={[
+                        { key: 'system', label: 'System' },
+                        { key: 'developer', label: 'Developer' },
+                        { key: 'release', label: 'Release year' },
+                        { key: 'rating', label: 'Rating' },
+                    ]}
+                    label="Group by"
+                    onChange={this.changeGrouping}
+                    value={this.props.groupBy}
+                />
+
+                {this.getGroups().map(group =>
+                    <Group
+                        key={group.id}
+                        {...group}
                     />
                 )}
             </div>
@@ -49,7 +95,10 @@ class App extends React.Component {
 }
 
 App.propTypes = {
+    changeGrouping: PropTypes.func.isRequired,
     editing: PropTypes.bool.isRequired,
+    games: PropTypes.object.isRequired,
+    groupBy: PropTypes.string.isRequired,
     loadDlcs: PropTypes.func.isRequired,
     loadGames: PropTypes.func.isRequired,
     loadSystems: PropTypes.func.isRequired,
@@ -59,9 +108,12 @@ App.propTypes = {
 export default connectWithRouter(
     (state, ownProps) => ({
         editing: ownProps.location.pathname === '/edit',
+        games: state.games,
+        groupBy: state.ui.groupBy,
         systems: state.systems,
     }),
     {
+        changeGrouping,
         loadDlcs,
         loadGames,
         loadSystems,

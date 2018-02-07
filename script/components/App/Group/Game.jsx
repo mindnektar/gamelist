@@ -75,15 +75,27 @@ class Game extends React.Component {
                         )}
                     </div>
 
-                    <div className="game__developer">
-                        {this.props.developer}
-                    </div>
+                    {this.props.groupBy !== 'system' &&
+                        <div className="game__system">
+                            {this.props.system}
+                        </div>
+                    }
 
-                    <div className="game__release">
-                        {this.props.release}
-                    </div>
+                    {this.props.groupBy !== 'developer' &&
+                        <div className="game__developer">
+                            {this.props.developer}
+                        </div>
+                    }
 
-                    <Rating value={this.props.rating} />
+                    {this.props.groupBy !== 'release' &&
+                        <div className="game__release">
+                            {this.props.release}
+                        </div>
+                    }
+
+                    {this.props.groupBy !== 'rating' &&
+                        <Rating value={this.props.rating} />
+                    }
                 </div>
 
                 <TransitionGroup>
@@ -173,10 +185,12 @@ Game.propTypes = {
     editing: PropTypes.bool.isRequired,
     expanded: PropTypes.bool.isRequired,
     genre: PropTypes.string,
+    groupBy: PropTypes.string.isRequired,
     id: PropTypes.number.isRequired,
     rating: PropTypes.number,
     release: PropTypes.string,
     saveGame: PropTypes.func.isRequired,
+    system: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     toggleGame: PropTypes.func.isRequired,
     youTubeId: PropTypes.string,
@@ -189,6 +203,8 @@ export default connectWithRouter(
             .sort((a, b) => a.title.localeCompare(b.title)),
         editing: ownProps.location.pathname === '/edit',
         expanded: state.ui.expandedGame === ownProps.id,
+        groupBy: state.ui.groupBy,
+        system: state.systems[ownProps.system].name,
     }),
     {
         saveGame,

@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import connectWithRouter from 'hoc/connectWithRouter';
-import Game from './System/Game';
+import Game from './Group/Game';
 
-class System extends React.Component {
+class Group extends React.Component {
     filteredGames() {
         return Object.values(this.props.games)
-            .filter(game => game.system === this.props.id)
+            .filter(game => game[this.props.groupBy] === this.props.id)
             .sort((a, b) => a.title.localeCompare(b.title));
     }
 
@@ -27,7 +27,7 @@ class System extends React.Component {
 
                 {games.map(game =>
                     <Game
-                        key={game.title}
+                        key={game.id}
                         {...game}
                     />
                 )}
@@ -36,16 +36,18 @@ class System extends React.Component {
     }
 }
 
-System.propTypes = {
+Group.propTypes = {
     games: PropTypes.object.isRequired,
-    id: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired,
+    groupBy: PropTypes.string.isRequired,
+    id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+    name: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
 };
 
 export default connectWithRouter(
     state => ({
         games: state.games,
+        groupBy: state.ui.groupBy,
     }),
     null,
-    System
+    Group
 );

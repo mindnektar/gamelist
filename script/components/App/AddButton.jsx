@@ -62,18 +62,21 @@ class AddButton extends React.Component {
 
                     {this.state.expanded &&
                         <div className="game__body">
-                            <TextField
-                                label="title"
-                                onChange={this.changeTitle}
-                            >
-                                {this.state.title}
-                            </TextField>
+                            <div className="add-button__fields">
+                                <TextField
+                                    label="Title"
+                                    onChange={this.changeTitle}
+                                >
+                                    {this.state.title}
+                                </TextField>
 
-                            <Select
-                                items={this.getSystems()}
-                                onChange={this.changeSystem}
-                                value={this.state.system}
-                            />
+                                <Select
+                                    items={this.getSystems()}
+                                    label="System"
+                                    onChange={this.changeSystem}
+                                    value={this.state.system}
+                                />
+                            </div>
 
                             <Button onTouchTap={this.save}>
                                 Save
