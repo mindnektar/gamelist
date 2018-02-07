@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import connectWithRouter from 'hoc/connectWithRouter';
 import { saveGame } from 'actions/games';
 import { toggleGame } from 'actions/ui';
@@ -85,57 +86,70 @@ class Game extends React.Component {
                     <Rating value={this.props.rating} />
                 </div>
 
-                {this.props.expanded &&
-                    <div className="game__body">
-                        {this.state.editing && this.props.editing ? (
-                            <Editor
-                                {...this.props}
-                                controller={this.setEditorController}
-                            />
-                        ) : (
-                            <div className="game__info">
-                                {this.props.youTubeId ? (
-                                    <iframe
-                                        className="game__video"
-                                        src={`https://www.youtube.com/embed/${this.props.youTubeId}`}
-                                        type="text/html"
+                <TransitionGroup>
+                    {this.props.expanded &&
+                        <CSSTransition
+                            classNames="game"
+                            key={this.props.id}
+                            mountOnEnter
+                            timeout={{
+                                enter: 300,
+                                exit: 300,
+                            }}
+                            unmountOnExit
+                        >
+                            <div className="game__body">
+                                {this.state.editing && this.props.editing ? (
+                                    <Editor
+                                        {...this.props}
+                                        controller={this.setEditorController}
                                     />
                                 ) : (
-                                    <div className="game__video-placeholder" />
+                                    <div className="game__info">
+                                        {this.props.youTubeId ? (
+                                            <iframe
+                                                className="game__video"
+                                                src={`https://www.youtube.com/embed/${this.props.youTubeId}`}
+                                                type="text/html"
+                                            />
+                                        ) : (
+                                            <div className="game__video-placeholder" />
+                                        )}
+
+                                        <div className="game__description">
+                                            {this.props.description}
+
+                                            {this.props.dlcs.length > 0 &&
+                                                <div className="game__dlcs">
+                                                    <div className="game__dlcs-header">DLCs</div>
+
+                                                    <div>
+                                                        {this.props.dlcs.map(dlc =>
+                                                            <div className="game__dlc">
+                                                                <div>{dlc.title}</div>
+
+                                                                <Rating value={dlc.rating} />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
                                 )}
 
-                                <div className="game__description">
-                                    {this.props.description}
-
-                                    {this.props.dlcs.length > 0 &&
-                                        <div className="game__dlcs">
-                                            <div className="game__dlcs-header">DLCs</div>
-
-                                            <div>
-                                                {this.props.dlcs.map(dlc =>
-                                                    <div className="game__dlc">
-                                                        <div>{dlc.title}</div>
-
-                                                        <Rating value={dlc.rating} />
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    }
-                                </div>
+                                {this.props.editing &&
+                                    <div
+                                        className="game__edit-button material-icons"
+                                        onTouchTap={this.toggleEditing}
+                                    >
+                                        {this.state.editing ? 'close' : 'mode_edit'}
+                                    </div>
+                                }
                             </div>
-                        )}
-
-                        {this.props.editing &&
-                            <div
-                                className="game__edit-button material-icons"
-                                onTouchTap={this.toggleEditing}
-                            >
-                                {this.state.editing ? 'close' : 'mode_edit'}
-                            </div>
-                        }
-                    </div>
-                }
+                        </CSSTransition>
+                    }
+                </TransitionGroup>
             </div>
         );
     }
