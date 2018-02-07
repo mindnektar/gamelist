@@ -5,7 +5,7 @@ import { deleteGame, fillGameData } from 'actions/games';
 import TextField from 'TextField';
 
 const editableAttributes = [
-    'title', 'rating', 'genre', 'developer', 'release', 'youTubeId', 'description',
+    'title', 'compilation', 'rating', 'genre', 'developer', 'release', 'youTubeId', 'description',
 ];
 
 class Editor extends React.Component {

@@ -55,6 +55,12 @@ class Game extends React.Component {
                     <div className="game__title">
                         {this.props.title}
 
+                        {this.props.compilation &&
+                            <span className="game__title-compilation">
+                                ({this.props.compilation})
+                            </span>
+                        }
+
                         {this.props.dlcs.length > 0 &&
                             <span className="game__title-dlc-count">
                                 {this.props.dlcs.length} DLC{this.props.dlcs.length !== 1 ? 's' : ''}
@@ -136,6 +142,7 @@ class Game extends React.Component {
 }
 
 Game.defaultProps = {
+    compilation: '',
     description: '',
     developer: '',
     genre: '',
@@ -145,6 +152,7 @@ Game.defaultProps = {
 };
 
 Game.propTypes = {
+    compilation: PropTypes.string,
     description: PropTypes.string,
     developer: PropTypes.string,
     dlcs: PropTypes.array.isRequired,
