@@ -12,6 +12,10 @@ class Game extends React.Component {
         expanded: false,
     }
 
+    getGenres() {
+        return this.props.genre.split(',').sort((a, b) => a.localeCompare(b));
+    }
+
     setEditorController = (controller) => {
         this.editorController = controller;
     }
@@ -56,8 +60,8 @@ class Game extends React.Component {
                     </div>
 
                     <div className="game__genre">
-                        {this.props.genre.split(',').map(genre =>
-                            <span key={genre}>{genre}</span>
+                        {this.getGenres().map(genre =>
+                            <span key={genre}>{genre.trim()}</span>
                         )}
                     </div>
 
