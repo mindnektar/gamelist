@@ -71,7 +71,9 @@ app.get('/api/games/:id/fill/:giantBombIndex', (request, response) => {
                                         results.developers[0].name
                                     ) :
                                     '',
-                                genre: results.genres.map(genre => genre.name).join(','),
+                                genre: results.genres ?
+                                    results.genres.map(genre => genre.name).join(',') :
+                                    '',
                                 youTubeId: items[0].id.videoId,
                             };
 
