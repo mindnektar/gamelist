@@ -3,13 +3,13 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import connectWithRouter from 'hoc/connectWithRouter';
 import { saveGame } from 'actions/games';
+import { toggleGame } from 'actions/ui';
 import Rating from './Game/Rating';
 import Editor from './Game/Editor';
 
 class Game extends React.Component {
     state = {
         editing: false,
-        expanded: false,
     }
 
     getGenres() {
@@ -23,7 +23,7 @@ class Game extends React.Component {
     }
 
     toggleExpanded = () => {
-        this.setState({ expanded: !this.state.expanded });
+        this.props.toggleGame(this.props.id);
     }
 
     toggleEditing = () => {
@@ -42,7 +42,7 @@ class Game extends React.Component {
                 className={classNames(
                     'game',
                     {
-                        'game--expanded': this.state.expanded,
+                        'game--expanded': this.props.expanded,
                         'game--editing': this.state.editing,
                     }
                 )}
@@ -85,7 +85,7 @@ class Game extends React.Component {
                     <Rating value={this.props.rating} />
                 </div>
 
-                {this.state.expanded &&
+                {this.props.expanded &&
                     <div className="game__body">
                         {this.state.editing && this.props.editing ? (
                             <Editor
@@ -157,12 +157,14 @@ Game.propTypes = {
     developer: PropTypes.string,
     dlcs: PropTypes.array.isRequired,
     editing: PropTypes.bool.isRequired,
+    expanded: PropTypes.bool.isRequired,
     genre: PropTypes.string,
     id: PropTypes.number.isRequired,
     rating: PropTypes.number,
     release: PropTypes.string,
     saveGame: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
+    toggleGame: PropTypes.func.isRequired,
     youTubeId: PropTypes.string,
 };
 
@@ -172,9 +174,11 @@ export default connectWithRouter(
             .filter(dlc => dlc.parent === ownProps.id)
             .sort((a, b) => a.title.localeCompare(b.title)),
         editing: ownProps.location.pathname === '/edit',
+        expanded: state.ui.expandedGame === ownProps.id,
     }),
     {
         saveGame,
+        toggleGame,
     },
     Game
 );

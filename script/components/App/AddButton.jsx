@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import scrollToElement from 'scroll-to-element';
 import connectWithRouter from 'hoc/connectWithRouter';
 import { createGame } from 'actions/games';
+import { toggleGame } from 'actions/ui';
 import Button from 'Button';
 import TextField from 'TextField';
 import Select from 'Select';
@@ -34,6 +35,8 @@ class AddButton extends React.Component {
 
         this.props.createGame(this.state.title, this.state.system).then((game) => {
             scrollToElement(`#game-${game.id}`, { ease: 'inOutQuad', align: 'middle' });
+
+            this.props.toggleGame(game.id);
         });
     }
 
@@ -86,6 +89,7 @@ class AddButton extends React.Component {
 AddButton.propTypes = {
     createGame: PropTypes.func.isRequired,
     systems: PropTypes.object.isRequired,
+    toggleGame: PropTypes.func.isRequired,
 };
 
 export default connectWithRouter(
@@ -94,6 +98,7 @@ export default connectWithRouter(
     }),
     {
         createGame,
+        toggleGame,
     },
     AddButton
 );
