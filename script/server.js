@@ -30,6 +30,7 @@ app.get('/api/games/:id/fill/:giantBombIndex', (request, response) => {
             const YOUTUBE_KEY = 'AIzaSyCC-9pROIO9leCFfkqlkfDR5wjMihZtvcA';
             const games = JSON.parse(data);
             let game = games[request.params.id];
+            const giantBombIndex = request.params.giantBombIndex || 0;
             const youTubeQuery = encodeURIComponent(`${game.title} ${JSON.parse(systems)[game.system].name} gameplay`);
 
             fetch(`https://www.googleapis.com/youtube/v3/search?key=${YOUTUBE_KEY}&q=${youTubeQuery}&type=video&maxResults=1&part=snippet`)
@@ -39,12 +40,12 @@ app.get('/api/games/:id/fill/:giantBombIndex', (request, response) => {
                 .then(({ items }) => {
                     console.log(items);
 
-                    fetch(`https://www.giantbomb.com/api/search/?api_key=${GIANTBOMB_KEY}&query=${encodeURIComponent(game.title)}&resources=game&limit=3&field_list=guid&format=json`)
+                    fetch(`https://www.giantbomb.com/api/search/?api_key=${GIANTBOMB_KEY}&query=${encodeURIComponent(game.title)}&resources=game&limit=${giantBombIndex + 1}&field_list=guid&format=json`)
                         .then(result => (
                             result.json()
                         ))
                         .then(({ results }) => (
-                            results[request.params.giantBombIndex || 0].guid
+                            results[giantBombIndex].guid
                         ))
                         .then(guid => (
                             fetch(`https://www.giantbomb.com/api/game/${guid}?api_key=${GIANTBOMB_KEY}&field_list=deck,original_release_date,developers,genres&format=json`)
@@ -58,15 +59,21 @@ app.get('/api/games/:id/fill/:giantBombIndex', (request, response) => {
                             const developerMap = {
                                 '2K Marin': '2K Games',
                                 '3 Minute Games, LLC': '3 Minute Games',
+                                'Acclaim Studios Manchester': 'Acclaim',
+                                'Acclaim Studios Salt Lake City': 'Acclaim',
                                 'AlphaDream Corporation, Ltd.': 'AlphaDream',
+                                'ASCII Corporation': 'ASCII',
+                                'Athena Co., Ltd.': 'Athena',
                                 'Atlus Co., Ltd.': 'Atlus',
                                 'Bethesda Game Studios': 'Bethesda',
+                                'Blizzard Entertainment': 'Blizzard',
                                 'Camelot Software Planning': 'Camelot',
                                 'cavia inc.': 'Cavia',
                                 'Crystal Dynamics, Inc.': 'Crystal Dynamics',
                                 'Dimps Corporation': 'Dimps',
                                 'DONTNOD Entertainment': 'DONTNOD',
                                 'Eidos-Montréal': 'Eidos',
+                                'Eurocom Entertainment Software': 'Eurocom',
                                 'Flagship Co., Ltd.': 'Flagship',
                                 'Fountainhead Entertainment, Inc.': 'Fountainhead',
                                 'Game Freak, Inc.': 'Game Freak',
@@ -76,24 +83,30 @@ app.get('/api/games/:id/fill/:giantBombIndex', (request, response) => {
                                 'HAL Laboratory, Inc.': 'HAL Laboratory',
                                 'Harmonix Music Systems, Inc.': 'Harmonix',
                                 'Hudson Entertainment, Inc.': 'Hudson',
+                                'Human Entertainment, Inc.': 'Human Entertainment',
                                 'Human Head Studios, Inc.': 'Human Head',
                                 'iNiS Corp.': 'iNiS',
                                 'Intelligent Systems Co., Ltd.': 'Intelligent Systems',
                                 'Inti Creates Co., Ltd.': 'Inti Creates',
                                 'Klei Entertainment Inc.': 'Klei',
+                                'Konami Computer Entertainment Osaka Co., Ltd.': 'Konami',
                                 'Konami Computer Entertainment Tokyo': 'Konami',
                                 'Level-5 Inc.': 'Level-5',
                                 'Monolith Productions, Inc.': 'Monolith Productions',
+                                'Neverland Co., Ltd.': 'Neverland',
                                 'Neversoft Entertainment': 'Neversoft',
                                 'Nintendo EAD': 'Nintendo',
                                 'Nintendo EPD': 'Nintendo',
                                 'Nintendo R&D1': 'Nintendo',
+                                'Nintendo R&D3': 'Nintendo',
                                 'Now Production Co., Ltd.': 'Now Production',
                                 'Number None Inc': 'Number None',
                                 'Obsidian Entertainment': 'Obsidian',
                                 'Pandemic Studios': 'Pandemic',
                                 'Paon Corporation, Ltd.': 'Paon',
                                 'PopCap Games, Inc.': 'PopCap Games',
+                                'Quintet Co., Ltd.': 'Quintet',
+                                'Racjin Co., Ltd.': 'Racjin',
                                 'Rare, Ltd.': 'Rare',
                                 'RedLynx Ltd': 'RedLynx',
                                 'Remedy Entertainment Ltd.': 'Remedy',
@@ -101,15 +114,18 @@ app.get('/api/games/:id/fill/:giantBombIndex', (request, response) => {
                                 'Rockstar San Diego': 'Rockstar',
                                 'Rocksteady Studios Ltd': 'Rocksteady',
                                 'Silicon Knights, Inc.': 'Silicon Knights',
+                                'SRD Co. Ltd.': 'Nintendo',
                                 'Sumo Digital Ltd.': 'Sumo Digital',
                                 'Taito Corporation': 'Taito',
                                 'Techland Sp. z o.o.': 'Techland',
+                                'Traveller\'s Tales Ltd.': 'Traveller\'s Tales',
                                 'tri-Crescendo Inc.': 'tri-Crescendo',
                                 'Ubisoft Montpellier Studios': 'Ubisoft',
                                 'Ubisoft Montreal Studios': 'Ubisoft',
                                 'Ubisoft Shanghai Studios': 'Ubisoft',
                                 'Valve Corporation': 'Valve',
                                 'WayForward Technologies': 'WayForward',
+                                'Westwood Studios, Inc.': 'Westwood',
                                 'YAGER Development GmbH': 'Yager Development',
                             };
 

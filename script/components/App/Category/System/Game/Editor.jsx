@@ -9,58 +9,78 @@ const editableAttributes = [
 ];
 
 class Editor extends React.Component {
-    state = editableAttributes.reduce((result, current) => ({
-        ...result,
-        [current]: this.props[current],
-    }), {})
+    state = {
+        attributes: editableAttributes.reduce((result, current) => ({
+            ...result,
+            [current]: this.props[current],
+        }), {}),
+        giantBombIndex: 0,
+    }
 
     componentWillMount() {
         this.props.controller({
-            getData: () => this.state,
+            getData: () => this.state.attributes,
         });
     }
 
-    fillHandler = giantBombIndex => () => {
-        this.props.fillGameData(this.props.id, giantBombIndex).then((game) => {
-            this.setState(editableAttributes.reduce((result, current) => ({
-                ...result,
-                [current]: game[current],
-            }), {}));
+    changeGiantBombIndex = (event) => {
+        this.setState({ giantBombIndex: event.target.value });
+    }
+
+    fillGameData = () => {
+        this.props.fillGameData(
+            this.props.id,
+            parseInt(this.state.giantBombIndex, 10)
+        ).then((game) => {
+            this.setState({
+                attributes: {
+                    ...this.state.attributes,
+                    ...editableAttributes.reduce((result, current) => ({
+                        ...result,
+                        [current]: game[current],
+                    }), {}),
+                },
+            });
         });
     }
 
     editHandler = type => (event) => {
-        this.setState({ [type]: event.target.value });
+        this.setState({
+            attributes: {
+                ...this.state.attributes,
+                [type]: event.target.value,
+            },
+        });
     }
 
     render() {
         return (
             <div className="game__editor">
                 <div className="game__editor-fields">
-                    {Object.keys(this.state).map(type =>
+                    {Object.keys(this.state.attributes).map(type =>
                         <TextField
                             key={type}
                             label={type}
                             onChange={this.editHandler(type)}
                         >
-                            {this.state[type] || ''}
+                            {this.state.attributes[type] || ''}
                         </TextField>
                     )}
                 </div>
 
                 <div
                     className="game__editor-fill"
-                    onTouchTap={this.fillHandler(0)}
+                    onTouchTap={this.fillGameData}
                 >
                     Fill
                 </div>
 
-                <div
-                    className="game__editor-fill"
-                    onTouchTap={this.fillHandler(1)}
+                <TextField
+                    label="GiantBomb index"
+                    onChange={this.changeGiantBombIndex}
                 >
-                    Fill (alternative)
-                </div>
+                    {this.state.giantBombIndex}
+                </TextField>
             </div>
         );
     }
