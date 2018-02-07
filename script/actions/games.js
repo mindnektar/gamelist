@@ -1,7 +1,19 @@
 import api from 'api';
 
+export const CREATE_GAME = 'CREATE_GAME';
 export const LOAD_GAMES = 'LOAD_GAMES';
 export const SAVE_GAME = 'SAVE_GAME';
+
+export const createGame = (title, system) => dispatch => (
+    api.createGame(title, system).then((game) => {
+        dispatch({
+            type: CREATE_GAME,
+            payload: { game },
+        });
+
+        return game;
+    })
+);
 
 export const fillGameData = (id, giantBombIndex) => dispatch => (
     api.fillGameData(id, giantBombIndex).then((data) => {

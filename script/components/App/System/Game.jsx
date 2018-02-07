@@ -13,7 +13,9 @@ class Game extends React.Component {
     }
 
     getGenres() {
-        return this.props.genre.split(',').sort((a, b) => a.localeCompare(b));
+        return this.props.genre ?
+            this.props.genre.split(',').sort((a, b) => a.localeCompare(b)) :
+            [];
     }
 
     setEditorController = (controller) => {
@@ -44,6 +46,7 @@ class Game extends React.Component {
                         'game--editing': this.state.editing,
                     }
                 )}
+                id={`game-${this.props.id}`}
             >
                 <div
                     className="game__head"
@@ -132,17 +135,20 @@ class Game extends React.Component {
 
 Game.defaultProps = {
     description: '',
+    developer: '',
+    genre: '',
+    rating: 0,
     release: null,
     youTubeId: null,
 };
 
 Game.propTypes = {
     description: PropTypes.string,
-    developer: PropTypes.string.isRequired,
+    developer: PropTypes.string,
     dlcs: PropTypes.array.isRequired,
-    genre: PropTypes.string.isRequired,
+    genre: PropTypes.string,
     id: PropTypes.number.isRequired,
-    rating: PropTypes.number.isRequired,
+    rating: PropTypes.number,
     release: PropTypes.string,
     saveGame: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,

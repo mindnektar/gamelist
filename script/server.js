@@ -102,6 +102,19 @@ app.patch('/api/games', (request, response) => {
     });
 });
 
+app.post('/api/games', (request, response) => {
+    fs.readFile(gamesPath, (error, data) => {
+        const games = JSON.parse(data);
+        const id = Object.values(games).sort((a, b) => b.id - a.id)[0].id + 1;
+
+        games[id] = { id, ...request.body };
+
+        fs.writeFile(gamesPath, JSON.stringify(games), () => {
+            response.send(games[id]);
+        });
+    });
+});
+
 app.get('/api/dlcs', (request, response) => {
     fs.readFile('script/server/db/dlcs.json', (error, data) => {
         response.send(data);

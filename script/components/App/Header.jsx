@@ -11,7 +11,7 @@ class Header extends React.Component {
                 </div>
 
                 <div className="header__total">
-                    Total: {Object.values(this.props.games).length} games
+                    {Object.values(this.props.games).length} games
                 </div>
             </div>
         );

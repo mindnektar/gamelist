@@ -6,6 +6,7 @@ import { loadDlcs } from 'actions/dlcs';
 import { loadSystems } from 'actions/systems';
 import System from './App/System';
 import Header from './App/Header';
+import AddButton from './App/AddButton';
 
 class App extends React.Component {
     state = {
@@ -22,7 +23,7 @@ class App extends React.Component {
         });
     }
 
-    filteredCategories() {
+    getSystems() {
         return Object.values(this.props.systems)
             .sort((a, b) => a.order - b.order);
     }
@@ -32,7 +33,9 @@ class App extends React.Component {
             <div className="gamelist">
                 <Header />
 
-                {this.filteredCategories().map(category =>
+                <AddButton />
+
+                {this.getSystems().map(category =>
                     <System
                         key={category.id}
                         {...category}
