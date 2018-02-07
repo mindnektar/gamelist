@@ -33,7 +33,9 @@ class App extends React.Component {
             <div className="gamelist">
                 <Header />
 
-                <AddButton />
+                {this.props.editing &&
+                    <AddButton />
+                }
 
                 {this.getSystems().map(category =>
                     <System
@@ -47,6 +49,7 @@ class App extends React.Component {
 }
 
 App.propTypes = {
+    editing: PropTypes.bool.isRequired,
     loadDlcs: PropTypes.func.isRequired,
     loadGames: PropTypes.func.isRequired,
     loadSystems: PropTypes.func.isRequired,
@@ -54,7 +57,8 @@ App.propTypes = {
 };
 
 export default connectWithRouter(
-    state => ({
+    (state, ownProps) => ({
+        editing: ownProps.location.pathname === '/edit',
         systems: state.systems,
     }),
     {

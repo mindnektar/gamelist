@@ -81,7 +81,7 @@ class Game extends React.Component {
 
                 {this.state.expanded &&
                     <div className="game__body">
-                        {this.state.editing ? (
+                        {this.state.editing && this.props.editing ? (
                             <Editor
                                 {...this.props}
                                 controller={this.setEditorController}
@@ -120,12 +120,14 @@ class Game extends React.Component {
                             </div>
                         )}
 
-                        <div
-                            className="game__edit-button material-icons"
-                            onTouchTap={this.toggleEditing}
-                        >
-                            {this.state.editing ? 'close' : 'mode_edit'}
-                        </div>
+                        {this.props.editing &&
+                            <div
+                                className="game__edit-button material-icons"
+                                onTouchTap={this.toggleEditing}
+                            >
+                                {this.state.editing ? 'close' : 'mode_edit'}
+                            </div>
+                        }
                     </div>
                 }
             </div>
@@ -146,6 +148,7 @@ Game.propTypes = {
     description: PropTypes.string,
     developer: PropTypes.string,
     dlcs: PropTypes.array.isRequired,
+    editing: PropTypes.bool.isRequired,
     genre: PropTypes.string,
     id: PropTypes.number.isRequired,
     rating: PropTypes.number,
@@ -160,6 +163,7 @@ export default connectWithRouter(
         dlcs: Object.values(state.dlcs)
             .filter(dlc => dlc.parent === ownProps.id)
             .sort((a, b) => a.title.localeCompare(b.title)),
+        editing: ownProps.location.pathname === '/edit',
     }),
     {
         saveGame,
