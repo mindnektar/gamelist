@@ -46,43 +46,39 @@ class AddButton extends React.Component {
 
     render() {
         return (
-            <div className="add-button">
+            <div
+                className={classNames(
+                    'add-button',
+                    { 'add-button--expanded': this.state.expanded }
+                )}
+            >
                 <div
-                    className={classNames(
-                        'game',
-                        { 'game--expanded': this.state.expanded }
-                    )}
+                    className="add-button__head"
+                    onTouchTap={this.toggleExpanded}
                 >
-                    <div
-                        className="game__head"
-                        onTouchTap={this.toggleExpanded}
-                    >
-                        Add game
+                    Add game
+                </div>
+
+                <div className="add-button__body">
+                    <div className="add-button__fields">
+                        <TextField
+                            label="Title"
+                            onChange={this.changeTitle}
+                        >
+                            {this.state.title}
+                        </TextField>
+
+                        <Select
+                            items={this.getSystems()}
+                            label="System"
+                            onChange={this.changeSystem}
+                            value={this.state.system}
+                        />
                     </div>
 
-                    {this.state.expanded &&
-                        <div className="game__body">
-                            <div className="add-button__fields">
-                                <TextField
-                                    label="Title"
-                                    onChange={this.changeTitle}
-                                >
-                                    {this.state.title}
-                                </TextField>
-
-                                <Select
-                                    items={this.getSystems()}
-                                    label="System"
-                                    onChange={this.changeSystem}
-                                    value={this.state.system}
-                                />
-                            </div>
-
-                            <Button onTouchTap={this.save}>
-                                Save
-                            </Button>
-                        </div>
-                    }
+                    <Button onTouchTap={this.save}>
+                        Save
+                    </Button>
                 </div>
             </div>
         );

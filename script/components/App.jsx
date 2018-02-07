@@ -71,17 +71,19 @@ class App extends React.Component {
                     <AddButton />
                 }
 
-                <Select
-                    items={[
-                        { key: 'system', label: 'System' },
-                        { key: 'developer', label: 'Developer' },
-                        { key: 'release', label: 'Release year' },
-                        { key: 'rating', label: 'Rating' },
-                    ]}
-                    label="Group by"
-                    onChange={this.changeGrouping}
-                    value={this.props.groupBy}
-                />
+                <div className="gamelist__grouping">
+                    <Select
+                        items={[
+                            { key: 'system', label: 'System' },
+                            { key: 'developer', label: 'Developer' },
+                            { key: 'release', label: 'Release year' },
+                            { key: 'rating', label: 'Rating' },
+                        ]}
+                        label="Group by"
+                        onChange={this.changeGrouping}
+                        value={this.props.groupBy}
+                    />
+                </div>
 
                 {this.getGroups().map(group =>
                     <Group

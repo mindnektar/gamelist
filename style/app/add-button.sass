@@ -1,5 +1,28 @@
 .add-button
-    margin-bottom: 24px
+    background-color: #999999
+    border: 1px solid #bbbbbb
+    border-bottom-color: #777777
+    border-radius: 4px
+    border-right-color: #777777
+    height: 26px
+    margin: 0 0 24px 8px
+    overflow: hidden
+    padding: 0 8px
+    transition: ease 300ms
+    transition-property: background-color, height
+
+    &.add-button--expanded,
+    &:hover
+        background-color: #a8a8a8
+
+.add-button--expanded
+    height: 128px
+
+.add-button__head
+    align-items: center
+    cursor: pointer
+    display: flex
+    height: 26px
 
 .add-button__fields
     display: flex
