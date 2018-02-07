@@ -115,6 +115,18 @@ app.post('/api/games', (request, response) => {
     });
 });
 
+app.delete('/api/games/:id', (request, response) => {
+    fs.readFile(gamesPath, (error, data) => {
+        const games = JSON.parse(data);
+
+        delete games[request.params.id];
+
+        fs.writeFile(gamesPath, JSON.stringify(games), () => {
+            response.sendStatus(204);
+        });
+    });
+});
+
 app.get('/api/dlcs', (request, response) => {
     fs.readFile('script/server/db/dlcs.json', (error, data) => {
         response.send(data);

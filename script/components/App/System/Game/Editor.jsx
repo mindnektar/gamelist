@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import connectWithRouter from 'hoc/connectWithRouter';
-import { fillGameData } from 'actions/games';
+import { deleteGame, fillGameData } from 'actions/games';
 import TextField from 'TextField';
 
 const editableAttributes = [
@@ -25,6 +25,10 @@ class Editor extends React.Component {
 
     changeGiantBombIndex = (event) => {
         this.setState({ giantBombIndex: event.target.value });
+    }
+
+    deleteGame = () => {
+        this.props.deleteGame(this.props.id);
     }
 
     fillGameData = () => {
@@ -66,6 +70,13 @@ class Editor extends React.Component {
                             {this.state.attributes[type] || ''}
                         </TextField>
                     )}
+
+                    <TextField
+                        label="GiantBomb index"
+                        onChange={this.changeGiantBombIndex}
+                    >
+                        {this.state.giantBombIndex}
+                    </TextField>
                 </div>
 
                 <div
@@ -75,12 +86,12 @@ class Editor extends React.Component {
                     Fill
                 </div>
 
-                <TextField
-                    label="GiantBomb index"
-                    onChange={this.changeGiantBombIndex}
+                <div
+                    className="game__delete-button material-icons"
+                    onTouchTap={this.deleteGame}
                 >
-                    {this.state.giantBombIndex}
-                </TextField>
+                    delete
+                </div>
             </div>
         );
     }
@@ -88,6 +99,7 @@ class Editor extends React.Component {
 
 Editor.propTypes = {
     controller: PropTypes.func.isRequired,
+    deleteGame: PropTypes.func.isRequired,
     fillGameData: PropTypes.func.isRequired,
     id: PropTypes.number.isRequired,
 };
@@ -95,6 +107,7 @@ Editor.propTypes = {
 export default connectWithRouter(
     null,
     {
+        deleteGame,
         fillGameData,
     },
     Editor

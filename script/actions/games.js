@@ -1,6 +1,7 @@
 import api from 'api';
 
 export const CREATE_GAME = 'CREATE_GAME';
+export const DELETE_GAME = 'DELETE_GAME';
 export const LOAD_GAMES = 'LOAD_GAMES';
 export const SAVE_GAME = 'SAVE_GAME';
 
@@ -12,6 +13,15 @@ export const createGame = (title, system) => dispatch => (
         });
 
         return game;
+    })
+);
+
+export const deleteGame = id => dispatch => (
+    api.deleteGame(id).then(() => {
+        dispatch({
+            type: DELETE_GAME,
+            payload: { id },
+        });
     })
 );
 

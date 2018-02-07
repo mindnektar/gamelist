@@ -35,6 +35,7 @@ const request = (path, method = 'GET', body) => (
 
 export default {
     createGame: (title, system) => request('games', 'POST', { title, system }),
+    deleteGame: id => request(`games/${id}`, 'DELETE'),
     fillGameData: (id, giantBombIndex = 0) => request(`games/${id}/fill/${giantBombIndex}`),
     loadDlcs: () => request('dlcs'),
     loadGames: () => request('games'),
