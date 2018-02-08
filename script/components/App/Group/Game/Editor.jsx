@@ -69,12 +69,14 @@ class Editor extends React.Component {
     }
 
     renderInput = (type) => {
+        const label = type[0].toUpperCase() + type.substring(1);
+
         if (type === 'system') {
             return (
                 <Select
                     items={this.getSystems()}
                     key={type}
-                    label={type}
+                    label={label}
                     onChange={this.editHandler(type)}
                     value={this.state.attributes[type]}
                 />
@@ -84,7 +86,7 @@ class Editor extends React.Component {
         return (
             <TextField
                 key={type}
-                label={type}
+                label={label}
                 onChange={this.editHandler(type)}
             >
                 {this.state.attributes[type] || ''}
