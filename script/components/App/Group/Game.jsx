@@ -154,7 +154,10 @@ class Game extends React.Component {
 
                                                     <div>
                                                         {this.props.dlcs.map(dlc =>
-                                                            <div className="game__dlc">
+                                                            <div
+                                                                className="game__dlc"
+                                                                key={dlc.id}
+                                                            >
                                                                 <div>{dlc.title}</div>
 
                                                                 <Rating value={dlc.rating} />
