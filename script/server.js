@@ -145,7 +145,7 @@ app.get('/api/systems', (request, response) => {
 });
 
 if (app.get('env') === 'production') {
-    app.get('/', (request, response) => {
+    app.get('/*', (request, response) => {
         response.sendFile(path.join(__dirname, '../public', request.path));
     });
 }
