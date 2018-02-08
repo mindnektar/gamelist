@@ -1,7 +1,9 @@
 import fetch from 'isomorphic-fetch';
 
+const url = process.env.NODE_ENV === 'development' ? 'http://localhost:4001' : '';
+
 const request = (path, method = 'GET', body) => (
-    fetch(`http://localhost:4001/api/${path}`, {
+    fetch(`${url}/api/${path}`, {
         method,
         body: body ? JSON.stringify(body) : null,
         headers: {
