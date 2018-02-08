@@ -5,9 +5,13 @@ import Game from './Group/Game';
 
 class Group extends React.Component {
     filteredGames() {
-        return Object.values(this.props.games)
-            .filter(game => game[this.props.groupBy] === this.props.id)
-            .sort((a, b) => a.title.localeCompare(b.title));
+        let games = Object.values(this.props.games);
+
+        if (this.props.groupBy) {
+            games = games.filter(game => game[this.props.groupBy] === this.props.id);
+        }
+
+        return games.sort((a, b) => a.title.localeCompare(b.title));
     }
 
     render() {

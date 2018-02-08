@@ -26,6 +26,10 @@ class App extends React.Component {
     }
 
     getGroups() {
+        if (!this.props.groupBy) {
+            return [{ id: '', name: 'All games' }];
+        }
+
         if (this.props.groupBy === 'system') {
             return Object.values(this.props.systems)
                 .sort((a, b) => a.order - b.order);
@@ -78,6 +82,7 @@ class App extends React.Component {
                             { key: 'developer', label: 'Developer' },
                             { key: 'release', label: 'Release year' },
                             { key: 'rating', label: 'Rating' },
+                            { key: '', label: '<none>' },
                         ]}
                         label="Group by"
                         onChange={this.changeGrouping}
