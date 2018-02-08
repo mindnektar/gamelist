@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import connectWithRouter from 'hoc/connectWithRouter';
+import scrollToGame from 'helpers/scrollToGame';
 import { saveGame } from 'actions/games';
 import { toggleGame } from 'actions/ui';
 import Rating from './Game/Rating';
@@ -31,7 +32,9 @@ class Game extends React.Component {
         const editing = !this.state.editing;
 
         if (!editing) {
-            this.props.saveGame(this.props.id, this.editorController.getData());
+            this.props.saveGame(this.props.id, this.editorController.getData()).then(() => {
+                scrollToGame(this.props.id);
+            });
         }
 
         this.setState({ editing });
@@ -77,7 +80,7 @@ class Game extends React.Component {
 
                     {this.props.groupBy !== 'system' &&
                         <div className="game__system">
-                            {this.props.system}
+                            {this.props.systems[this.props.system].name}
                         </div>
                     }
 
@@ -188,9 +191,10 @@ Game.propTypes = {
     groupBy: PropTypes.string.isRequired,
     id: PropTypes.number.isRequired,
     rating: PropTypes.number,
-    release: PropTypes.string,
+    release: PropTypes.number,
     saveGame: PropTypes.func.isRequired,
-    system: PropTypes.string.isRequired,
+    system: PropTypes.number.isRequired,
+    systems: PropTypes.object.isRequired,
     title: PropTypes.string.isRequired,
     toggleGame: PropTypes.func.isRequired,
     youTubeId: PropTypes.string,
@@ -204,7 +208,7 @@ export default connectWithRouter(
         editing: ownProps.location.pathname === '/edit',
         expanded: state.ui.expandedGame === ownProps.id,
         groupBy: state.ui.groupBy,
-        system: state.systems[ownProps.system].name,
+        systems: state.systems,
     }),
     {
         saveGame,

@@ -4,9 +4,11 @@ import connectWithRouter from 'hoc/connectWithRouter';
 import { deleteGame, fillGameData } from 'actions/games';
 import TextField from 'TextField';
 import Button from 'Button';
+import Select from 'Select';
 
 const editableAttributes = [
-    'title', 'compilation', 'rating', 'genre', 'developer', 'release', 'youTubeId', 'description',
+    'title', 'compilation', 'system', 'rating', 'genre', 'developer', 'release', 'youTubeId',
+    'description',
 ];
 
 class Editor extends React.Component {
@@ -22,6 +24,12 @@ class Editor extends React.Component {
         this.props.controller({
             getData: () => this.state.attributes,
         });
+    }
+
+    getSystems() {
+        return Object.values(this.props.systems)
+            .sort((a, b) => a.order - b.order)
+            .map(system => ({ key: system.id, label: system.name }));
     }
 
     changeGiantBombIndex = (event) => {
@@ -53,24 +61,42 @@ class Editor extends React.Component {
         this.setState({
             attributes: {
                 ...this.state.attributes,
-                [type]: event.target.value,
+                [type]: isNaN(event.target.value) ?
+                    event.target.value :
+                    parseInt(event.target.value, 10),
             },
         });
+    }
+
+    renderInput = (type) => {
+        if (type === 'system') {
+            return (
+                <Select
+                    items={this.getSystems()}
+                    key={type}
+                    label={type}
+                    onChange={this.editHandler(type)}
+                    value={this.state.attributes[type]}
+                />
+            );
+        }
+
+        return (
+            <TextField
+                key={type}
+                label={type}
+                onChange={this.editHandler(type)}
+            >
+                {this.state.attributes[type] || ''}
+            </TextField>
+        );
     }
 
     render() {
         return (
             <div className="game__editor">
                 <div className="game__editor-fields">
-                    {Object.keys(this.state.attributes).map(type =>
-                        <TextField
-                            key={type}
-                            label={type}
-                            onChange={this.editHandler(type)}
-                        >
-                            {this.state.attributes[type] || ''}
-                        </TextField>
-                    )}
+                    {Object.keys(this.state.attributes).map(this.renderInput)}
 
                     <TextField
                         label="GiantBomb index"
@@ -98,10 +124,13 @@ Editor.propTypes = {
     deleteGame: PropTypes.func.isRequired,
     fillGameData: PropTypes.func.isRequired,
     id: PropTypes.number.isRequired,
+    systems: PropTypes.object.isRequired,
 };
 
 export default connectWithRouter(
-    null,
+    state => ({
+        systems: state.systems,
+    }),
     {
         deleteGame,
         fillGameData,

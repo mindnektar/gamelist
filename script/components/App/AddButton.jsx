@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import scrollToElement from 'scroll-to-element';
 import connectWithRouter from 'hoc/connectWithRouter';
+import scrollToGame from 'helpers/scrollToGame';
 import { createGame } from 'actions/games';
 import { toggleGame } from 'actions/ui';
 import Button from 'Button';
@@ -34,7 +34,7 @@ class AddButton extends React.Component {
         this.toggleExpanded();
 
         this.props.createGame(this.state.title, this.state.system).then((game) => {
-            scrollToElement(`#game-${game.id}`, { ease: 'inOutQuad', align: 'middle' });
+            scrollToGame(game.id);
 
             this.props.toggleGame(game.id);
         });
