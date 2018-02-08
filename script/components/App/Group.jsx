@@ -11,6 +11,14 @@ class Group extends React.Component {
             games = games.filter(game => game[this.props.groupBy] === this.props.id);
         }
 
+        if (this.props.genreFilter.length > 0) {
+            games = games.filter((game) => {
+                const genres = game.genre.split(',');
+
+                return this.props.genreFilter.every(genre => genres.includes(genre));
+            });
+        }
+
         return games.sort((a, b) => a.title.localeCompare(b.title));
     }
 
@@ -42,6 +50,7 @@ class Group extends React.Component {
 
 Group.propTypes = {
     games: PropTypes.object.isRequired,
+    genreFilter: PropTypes.array.isRequired,
     groupBy: PropTypes.string.isRequired,
     id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
     name: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
@@ -50,6 +59,7 @@ Group.propTypes = {
 export default connectWithRouter(
     state => ({
         games: state.games,
+        genreFilter: state.ui.genreFilter,
         groupBy: state.ui.groupBy,
     }),
     null,

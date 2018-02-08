@@ -5,7 +5,7 @@ import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import connectWithRouter from 'hoc/connectWithRouter';
 import scrollToGame from 'helpers/scrollToGame';
 import { saveGame } from 'actions/games';
-import { toggleGame } from 'actions/ui';
+import { toggleGame, toggleGenreFilter } from 'actions/ui';
 import Rating from './Game/Rating';
 import Editor from './Game/Editor';
 
@@ -38,6 +38,11 @@ class Game extends React.Component {
         }
 
         this.setState({ editing });
+    }
+
+    toggleGenreFilterHandler = genre => (event) => {
+        event.stopPropagation();
+        this.props.toggleGenreFilter(genre);
     }
 
     render() {
@@ -74,7 +79,16 @@ class Game extends React.Component {
 
                     <div className="game__genre">
                         {this.getGenres().map(genre =>
-                            <span key={genre}>{genre.trim()}</span>
+                            <span
+                                className={classNames(
+                                    'game__genre-item',
+                                    { 'game__genre-item--active': this.props.genreFilter.includes(genre) }
+                                )}
+                                key={genre}
+                                onTouchTap={this.toggleGenreFilterHandler(genre)}
+                            >
+                                {genre.trim()}
+                            </span>
                         )}
                     </div>
 
@@ -188,6 +202,7 @@ Game.propTypes = {
     editing: PropTypes.bool.isRequired,
     expanded: PropTypes.bool.isRequired,
     genre: PropTypes.string,
+    genreFilter: PropTypes.array.isRequired,
     groupBy: PropTypes.string.isRequired,
     id: PropTypes.number.isRequired,
     rating: PropTypes.number,
@@ -197,6 +212,7 @@ Game.propTypes = {
     systems: PropTypes.object.isRequired,
     title: PropTypes.string.isRequired,
     toggleGame: PropTypes.func.isRequired,
+    toggleGenreFilter: PropTypes.func.isRequired,
     youTubeId: PropTypes.string,
 };
 
@@ -207,12 +223,14 @@ export default connectWithRouter(
             .sort((a, b) => a.title.localeCompare(b.title)),
         editing: ownProps.location.pathname === '/edit',
         expanded: state.ui.expandedGame === ownProps.id,
+        genreFilter: state.ui.genreFilter,
         groupBy: state.ui.groupBy,
         systems: state.systems,
     }),
     {
         saveGame,
         toggleGame,
+        toggleGenreFilter,
     },
     Game
 );
