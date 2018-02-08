@@ -18,6 +18,8 @@ app.use((request, response, next) => {
     next();
 });
 
+app.set('port', (process.env.PORT || 4001));
+
 app.get('/api/games', (request, response) => {
     fs.readFile(gamesPath, (error, data) => {
         response.send(data);
@@ -141,6 +143,6 @@ app.get('/api/systems', (request, response) => {
     });
 });
 
-app.listen(4001, () => {
+app.listen(app.get('port'), () => {
     console.log('Server running at http://localhost:4001');
 });
