@@ -143,6 +143,12 @@ app.get('/api/systems', (request, response) => {
     });
 });
 
+if (app.get('env') === 'production') {
+    app.get('/', (request, response) => {
+        response.sendFile(`public${request.path}`);
+    });
+}
+
 app.listen(app.get('port'), () => {
     console.log('Server running at http://localhost:4001');
 });
