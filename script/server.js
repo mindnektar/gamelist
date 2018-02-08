@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs');
+const path = require('path');
 const fetch = require('isomorphic-fetch');
 const developerMap = require('./server/helpers/developerMap');
 
@@ -145,7 +146,7 @@ app.get('/api/systems', (request, response) => {
 
 if (app.get('env') === 'production') {
     app.get('/', (request, response) => {
-        response.sendFile(`public${request.path}`);
+        response.sendFile(path.join(__dirname, '../public', request.path));
     });
 }
 
