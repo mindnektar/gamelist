@@ -1,13 +1,11 @@
-const express = require('express');
+/* eslint-disable no-console */
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
-const fetch = require('isomorphic-fetch');
 const knex = require('knex');
-const uuid = require('uuid');
-const developerMap = require('./server/helpers/developerMap');
+const app = require('express')();
 
-const app = express();
+app.set('port', (process.env.PORT || 4001));
 
 app.knex = knex(require('./server/knexfile').development);
 
@@ -21,105 +19,8 @@ app.use((request, response, next) => {
     next();
 });
 
-app.set('port', (process.env.PORT || 4001));
-
-const retrieve = (table) => app.knex.select().from(table).then(data => Promise.resolve(
-    data.reduce((result, current) => ({
-        ...result,
-        [current.id]: current,
-    }), {})
-));
-
-app.get('/api/games', (request, response) => {
-    retrieve('game').then(data => response.send(JSON.stringify(data)));
-});
-
-app.get('/api/games/:id/fill/:giantBombIndex', (request, response) => {
-    retrieve('system').then((systems) => {
-        retrieve('game').then((games) => {
-            const GIANTBOMB_KEY = 'aebe8a5bc71b49509966b5ea50e7951d79d99cd8';
-            const YOUTUBE_KEY = 'AIzaSyCC-9pROIO9leCFfkqlkfDR5wjMihZtvcA';
-            const game = games[request.params.id];
-            const giantBombIndex = request.params.giantBombIndex || 0;
-            const youTubeQuery = encodeURIComponent(`${game.title} ${systems[game.system].name} gameplay`);
-
-            fetch(`https://www.googleapis.com/youtube/v3/search?key=${YOUTUBE_KEY}&q=${youTubeQuery}&type=video&maxResults=1&part=snippet`)
-                .then(result => (
-                    result.json()
-                ))
-                .then(({ items }) => {
-                    console.log(items);
-
-                    fetch(`https://www.giantbomb.com/api/search/?api_key=${GIANTBOMB_KEY}&query=${encodeURIComponent(game.title)}&resources=game&limit=${giantBombIndex + 1}&field_list=guid&format=json`)
-                        .then(result => (
-                            result.json()
-                        ))
-                        .then(({ results }) => (
-                            results[giantBombIndex].guid
-                        ))
-                        .then(guid => (
-                            fetch(`https://www.giantbomb.com/api/game/${guid}?api_key=${GIANTBOMB_KEY}&field_list=deck,original_release_date,developers,genres&format=json`)
-                        ))
-                        .then(result => (
-                            result.json()
-                        ))
-                        .then(({ results }) => {
-                            console.log(results);
-
-                            const data = {
-                                description: results.deck ?
-                                    results.deck.replace(/&amp;/g, '&') :
-                                    '',
-                                release: results.original_release_date ?
-                                    parseInt(results.original_release_date.substring(0, 4), 10) :
-                                    '',
-                                developer: results.developers ?
-                                    (
-                                        developerMap[results.developers[0].name] ||
-                                        results.developers[0].name
-                                    ) :
-                                    '',
-                                genre: results.genres ?
-                                    results.genres.map(genre => genre.name).join(',') :
-                                    '',
-                                youTubeId: items[0].id.videoId,
-                            };
-
-                            app.knex('game').where('id', game.id).update(data).then(() => {
-                                response.send({ ...game, ...data });
-                            });
-                        });
-                });
-        });
-    });
-});
-
-app.patch('/api/games', (request, response) => {
-    app.knex('game').where('id', request.body.id).update(request.body.data).then(() => {
-        response.sendStatus(204);
-    });
-});
-
-app.post('/api/games', (request, response) => {
-    const game = { id: uuid(), ...request.body };
-
-    app.knex('game').insert(game).then(() => {
-        response.send(game);
-    });
-});
-
-app.delete('/api/games/:id', (request, response) => {
-    app.knex('game').where('id', request.params.id).del().then(() => {
-        response.sendStatus(204);
-    });
-});
-
-app.get('/api/dlcs', (request, response) => {
-    retrieve('dlc').then(data => response.send(JSON.stringify(data)));
-});
-
-app.get('/api/systems', (request, response) => {
-    retrieve('system').then(data => response.send(JSON.stringify(data)));
+fs.readdirSync(path.join(__dirname, 'server/api')).forEach((file) => {
+    require(`./server/api/${file}`)(app);
 });
 
 if (app.get('env') === 'production') {
