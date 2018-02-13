@@ -12,7 +12,7 @@ import Select from 'Select';
 class AddButton extends React.Component {
     state = {
         expanded: false,
-        system: 13,
+        system: 'd6cc7b4a-e309-4232-8d11-60facd967de7',
         title: '',
     }
 
@@ -23,7 +23,7 @@ class AddButton extends React.Component {
     }
 
     changeSystem = (event) => {
-        this.setState({ system: parseInt(event.target.value, 10) });
+        this.setState({ system: event.target.value });
     }
 
     changeTitle = (event) => {

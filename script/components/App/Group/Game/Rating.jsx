@@ -19,8 +19,12 @@ class Rating extends React.Component {
     }
 }
 
+Rating.defaultProps = {
+    value: PropTypes.number,
+};
+
 Rating.propTypes = {
-    value: PropTypes.number.isRequired,
+    value: PropTypes.number,
 };
 
 export default connectWithRouter(

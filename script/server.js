@@ -3,11 +3,13 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
 const fetch = require('isomorphic-fetch');
+const knex = require('knex');
+const uuid = require('uuid');
 const developerMap = require('./server/helpers/developerMap');
 
 const app = express();
-const gamesPath = 'script/server/db/games.json';
-const systemsPath = 'script/server/db/systems.json';
+
+app.knex = knex(require('./server/knexfile').development);
 
 app.use(bodyParser.json());
 
@@ -21,21 +23,25 @@ app.use((request, response, next) => {
 
 app.set('port', (process.env.PORT || 4001));
 
+const retrieve = (table) => app.knex.select().from(table).then(data => Promise.resolve(
+    data.reduce((result, current) => ({
+        ...result,
+        [current.id]: current,
+    }), {})
+));
+
 app.get('/api/games', (request, response) => {
-    fs.readFile(gamesPath, (error, data) => {
-        response.send(data);
-    });
+    retrieve('game').then(data => response.send(JSON.stringify(data)));
 });
 
 app.get('/api/games/:id/fill/:giantBombIndex', (request, response) => {
-    fs.readFile(systemsPath, 'utf8', (_, systems) => {
-        fs.readFile(gamesPath, 'utf8', (__, data) => {
+    retrieve('system').then((systems) => {
+        retrieve('game').then((games) => {
             const GIANTBOMB_KEY = 'aebe8a5bc71b49509966b5ea50e7951d79d99cd8';
             const YOUTUBE_KEY = 'AIzaSyCC-9pROIO9leCFfkqlkfDR5wjMihZtvcA';
-            const games = JSON.parse(data);
-            let game = games[request.params.id];
+            const game = games[request.params.id];
             const giantBombIndex = request.params.giantBombIndex || 0;
-            const youTubeQuery = encodeURIComponent(`${game.title} ${JSON.parse(systems)[game.system].name} gameplay`);
+            const youTubeQuery = encodeURIComponent(`${game.title} ${systems[game.system].name} gameplay`);
 
             fetch(`https://www.googleapis.com/youtube/v3/search?key=${YOUTUBE_KEY}&q=${youTubeQuery}&type=video&maxResults=1&part=snippet`)
                 .then(result => (
@@ -60,8 +66,7 @@ app.get('/api/games/:id/fill/:giantBombIndex', (request, response) => {
                         .then(({ results }) => {
                             console.log(results);
 
-                            game = {
-                                ...game,
+                            const data = {
                                 description: results.deck ?
                                     results.deck.replace(/&amp;/g, '&') :
                                     '',
@@ -80,11 +85,8 @@ app.get('/api/games/:id/fill/:giantBombIndex', (request, response) => {
                                 youTubeId: items[0].id.videoId,
                             };
 
-                            fs.writeFile(gamesPath, JSON.stringify({
-                                ...games,
-                                [game.id]: game,
-                            }), () => {
-                                response.send(game);
+                            app.knex('game').where('id', game.id).update(data).then(() => {
+                                response.send({ ...game, ...data });
                             });
                         });
                 });
@@ -93,55 +95,31 @@ app.get('/api/games/:id/fill/:giantBombIndex', (request, response) => {
 });
 
 app.patch('/api/games', (request, response) => {
-    fs.readFile(gamesPath, (error, data) => {
-        const games = JSON.parse(data);
-
-        games[request.body.id] = {
-            ...games[request.body.id],
-            ...request.body.data,
-        };
-
-        fs.writeFile(gamesPath, JSON.stringify(games), () => {
-            response.sendStatus(204);
-        });
+    app.knex('game').where('id', request.body.id).update(request.body.data).then(() => {
+        response.sendStatus(204);
     });
 });
 
 app.post('/api/games', (request, response) => {
-    fs.readFile(gamesPath, (error, data) => {
-        const games = JSON.parse(data);
-        const id = Object.values(games).sort((a, b) => b.id - a.id)[0].id + 1;
+    const game = { id: uuid(), ...request.body };
 
-        games[id] = { id, ...request.body };
-
-        fs.writeFile(gamesPath, JSON.stringify(games), () => {
-            response.send(games[id]);
-        });
+    app.knex('game').insert(game).then(() => {
+        response.send(game);
     });
 });
 
 app.delete('/api/games/:id', (request, response) => {
-    fs.readFile(gamesPath, (error, data) => {
-        const games = JSON.parse(data);
-
-        delete games[request.params.id];
-
-        fs.writeFile(gamesPath, JSON.stringify(games), () => {
-            response.sendStatus(204);
-        });
+    app.knex('game').where('id', request.params.id).del().then(() => {
+        response.sendStatus(204);
     });
 });
 
 app.get('/api/dlcs', (request, response) => {
-    fs.readFile('script/server/db/dlcs.json', (error, data) => {
-        response.send(data);
-    });
+    retrieve('dlc').then(data => response.send(JSON.stringify(data)));
 });
 
 app.get('/api/systems', (request, response) => {
-    fs.readFile(systemsPath, (error, data) => {
-        response.send(data);
-    });
+    retrieve('system').then(data => response.send(JSON.stringify(data)));
 });
 
 if (app.get('env') === 'production') {

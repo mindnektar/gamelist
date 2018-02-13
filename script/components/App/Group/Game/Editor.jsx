@@ -125,7 +125,7 @@ Editor.propTypes = {
     controller: PropTypes.func.isRequired,
     deleteGame: PropTypes.func.isRequired,
     fillGameData: PropTypes.func.isRequired,
-    id: PropTypes.number.isRequired,
+    id: PropTypes.string.isRequired,
     systems: PropTypes.object.isRequired,
 };
 
