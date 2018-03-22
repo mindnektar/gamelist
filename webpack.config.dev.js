@@ -6,12 +6,6 @@ const path = require('path');
 module.exports = webpackMerge(require('./webpack.config.common.js'), {
     devServer: {
         contentBase: path.join(__dirname, 'public'),
-        proxy: {
-            '/public/': {
-                target: "http://localhost:4000",
-                pathRewrite: {"^/public" : ""}
-            },
-        },
         hot: true,
         inline: true,
         port: 4000,

@@ -12,7 +12,7 @@ module.exports = (app) => {
         Promise.all([
             retrieve(app.knex, 'system'),
             retrieve(app.knex, 'game'),
-        ]).then((systems, games) => {
+        ]).then(([systems, games]) => {
             const GIANTBOMB_KEY = 'aebe8a5bc71b49509966b5ea50e7951d79d99cd8';
             const YOUTUBE_KEY = 'AIzaSyCC-9pROIO9leCFfkqlkfDR5wjMihZtvcA';
             const game = games[request.params.id];
