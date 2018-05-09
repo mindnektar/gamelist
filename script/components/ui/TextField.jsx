@@ -11,6 +11,7 @@ class TextField extends React.Component {
 
                 <input
                     className="ui-text-field__input"
+                    onBlur={this.props.onBlur}
                     onChange={this.props.onChange}
                     type="text"
                     value={this.props.children}
@@ -22,6 +23,7 @@ class TextField extends React.Component {
 
 TextField.defaultProps = {
     children: '',
+    onBlur: null,
 };
 
 TextField.propTypes = {
@@ -29,6 +31,7 @@ TextField.propTypes = {
         PropTypes.string, PropTypes.number,
     ]),
     label: PropTypes.string.isRequired,
+    onBlur: PropTypes.func,
     onChange: PropTypes.func.isRequired,
 };
 

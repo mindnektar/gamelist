@@ -57,13 +57,22 @@ class Editor extends React.Component {
         });
     }
 
-    editHandler = type => (event) => {
+    blurHandler = type => (event) => {
         this.setState({
             attributes: {
                 ...this.state.attributes,
                 [type]: isNaN(event.target.value) ?
                     event.target.value :
-                    parseInt(event.target.value, 10),
+                    parseFloat(event.target.value),
+            },
+        });
+    }
+
+    editHandler = type => (event) => {
+        this.setState({
+            attributes: {
+                ...this.state.attributes,
+                [type]: event.target.value,
             },
         });
     }
@@ -87,6 +96,7 @@ class Editor extends React.Component {
             <TextField
                 key={type}
                 label={label}
+                onBlur={this.blurHandler(type)}
                 onChange={this.editHandler(type)}
             >
                 {this.state.attributes[type] || ''}
