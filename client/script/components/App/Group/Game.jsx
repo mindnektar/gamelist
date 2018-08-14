@@ -16,7 +16,7 @@ class Game extends React.Component {
 
     getGenres() {
         return this.props.genre ?
-            this.props.genre.split(',').sort((a, b) => a.localeCompare(b)) :
+            this.props.genre.sort((a, b) => a.localeCompare(b)) :
             [];
     }
 
@@ -25,15 +25,15 @@ class Game extends React.Component {
     }
 
     toggleExpanded = () => {
-        this.props.toggleGame(this.props.id);
+        this.props.toggleGame(this.props._id);
     }
 
     toggleEditing = () => {
         const editing = !this.state.editing;
 
         if (!editing) {
-            this.props.saveGame(this.props.id, this.editorController.getData()).then(() => {
-                scrollToGame(this.props.id);
+            this.props.saveGame(this.props._id, this.editorController.getData()).then(() => {
+                scrollToGame(this.props._id);
             });
         }
 
@@ -55,7 +55,7 @@ class Game extends React.Component {
                         'game--editing': this.state.editing,
                     }
                 )}
-                id={`game-${this.props.id}`}
+                id={`game-${this.props._id}`}
             >
                 <div
                     className="game__head"
@@ -94,7 +94,7 @@ class Game extends React.Component {
 
                     {this.props.groupBy !== 'system' &&
                         <div className="game__system">
-                            {this.props.systems[this.props.system].name}
+                            {this.props.systems[this.props.systemId].name}
                         </div>
                     }
 
@@ -111,7 +111,7 @@ class Game extends React.Component {
                     }
 
                     {this.props.groupBy !== 'rating' &&
-                        <Rating value={this.props.rating} />
+                        <Rating value={this.props.rating / 10} />
                     }
                 </div>
 
@@ -119,7 +119,7 @@ class Game extends React.Component {
                     {this.props.expanded &&
                         <CSSTransition
                             classNames="game"
-                            key={this.props.id}
+                            key={this.props._id}
                             mountOnEnter
                             timeout={{
                                 enter: 300,
@@ -156,7 +156,7 @@ class Game extends React.Component {
                                                         {this.props.dlcs.map(dlc =>
                                                             <div
                                                                 className="game__dlc"
-                                                                key={dlc.id}
+                                                                key={dlc._id}
                                                             >
                                                                 <div>{dlc.title}</div>
 
@@ -191,27 +191,27 @@ Game.defaultProps = {
     compilation: '',
     description: '',
     developer: '',
-    genre: '',
+    genre: [],
     rating: 0,
     release: null,
     youTubeId: null,
 };
 
 Game.propTypes = {
+    _id: PropTypes.string.isRequired,
     compilation: PropTypes.string,
     description: PropTypes.string,
     developer: PropTypes.string,
     dlcs: PropTypes.array.isRequired,
     editing: PropTypes.bool.isRequired,
     expanded: PropTypes.bool.isRequired,
-    genre: PropTypes.string,
+    genre: PropTypes.array,
     genreFilter: PropTypes.array.isRequired,
     groupBy: PropTypes.string.isRequired,
-    id: PropTypes.string.isRequired,
     rating: PropTypes.number,
     release: PropTypes.number,
     saveGame: PropTypes.func.isRequired,
-    system: PropTypes.string.isRequired,
+    systemId: PropTypes.string.isRequired,
     systems: PropTypes.object.isRequired,
     title: PropTypes.string.isRequired,
     toggleGame: PropTypes.func.isRequired,
@@ -221,11 +221,8 @@ Game.propTypes = {
 
 export default connectWithRouter(
     (state, ownProps) => ({
-        dlcs: Object.values(state.dlcs)
-            .filter(dlc => dlc.parent === ownProps.id)
-            .sort((a, b) => a.title.localeCompare(b.title)),
         editing: ownProps.location.pathname === '/edit',
-        expanded: state.ui.expandedGame === ownProps.id,
+        expanded: state.ui.expandedGame === ownProps._id,
         genreFilter: state.ui.genreFilter,
         groupBy: state.ui.groupBy,
         systems: state.systems,

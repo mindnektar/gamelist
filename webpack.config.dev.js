@@ -1,16 +1,19 @@
-/* eslint-disable */
 const webpack = require('webpack');
 const webpackMerge = require('webpack-merge');
 const path = require('path');
+const config = require('./server/config');
 
 module.exports = webpackMerge(require('./webpack.config.common.js'), {
     devServer: {
         contentBase: path.join(__dirname, 'public'),
         hot: true,
         inline: true,
-        port: 4000,
+        port: config.get('ports').webpackDevServer,
         host: '0.0.0.0',
         disableHostCheck: true,
+        proxy: {
+            '**': `http://localhost:${config.get('ports').express}`,
+        },
     },
 
     plugins: [

@@ -40,7 +40,12 @@ export const loadGames = () => dispatch => (
     api.loadGames().then((games) => {
         dispatch({
             type: LOAD_GAMES,
-            payload: { games },
+            payload: {
+                games: games.reduce((result, current) => ({
+                    ...result,
+                    [current._id]: current,
+                }), {}),
+            },
         });
     })
 );

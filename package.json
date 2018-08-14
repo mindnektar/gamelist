@@ -1,10 +1,13 @@
 {
   "private": true,
   "scripts": {
-    "dev": "webpack-dev-server --env=dev --config webpack.config.dev.js",
-    "prod": "webpack --env=prod --config webpack.config.prod.js; git add .; git commit -m \"bundle assets\"",
-    "server": "nodemon script/server.js --exec babel-node --presets env --plugins transform-object-rest-spread",
-    "start": "node script/server.js --exec babel-node --presets env --plugins transform-object-rest-spread"
+    "webpack-dev-server": "webpack-dev-server --config webpack.config.dev.js",
+    "express-server": "nodemon --exec babel-node -- server/app.js -w server --presets env --plugins transform-object-rest-spread",
+    "dev": "concurrently 'npm run webpack-dev-server' 'npm run express-server'",
+    "build-frontend": "webpack --config webpack.config.prod.js",
+    "build-server": "babel server -d server-dist --ignore node_modules --presets env --plugins transform-object-rest-spread",
+    "build": "npm run build-frontend; npm run build-server; git add .; git commit -m \"bundle js\"",
+    "start": "node server-dist/app.js"
   },
   "dependencies": {
     "classnames": "2.2.5",

@@ -1,0 +1,158 @@
+{
+    "0": {
+        "id": 0,
+        "name": "Android",
+        "category": 0,
+        "order": 24
+    },
+    "1": {
+        "id": 1,
+        "name": "Arcade",
+        "category": 1,
+        "order": 25
+    },
+    "3": {
+        "id": 3,
+        "name": "Game Boy",
+        "category": 2,
+        "order": 7
+    },
+    "4": {
+        "id": 4,
+        "name": "Game Boy Advance",
+        "category": 2,
+        "order": 9
+    },
+    "5": {
+        "id": 5,
+        "name": "Game Boy Color",
+        "category": 2,
+        "order": 8
+    },
+    "6": {
+        "id": 6,
+        "name": "GameCube",
+        "category": 2,
+        "order": 3
+    },
+    "7": {
+        "id": 7,
+        "name": "Genesis",
+        "category": 4,
+        "order": 21
+    },
+    "8": {
+        "id": 8,
+        "name": "Master System",
+        "category": 4,
+        "order": 20
+    },
+    "9": {
+        "id": 9,
+        "name": "3DS",
+        "category": 2,
+        "order": 11
+    },
+    "11": {
+        "id": 11,
+        "name": "Nintendo 64",
+        "category": 2,
+        "order": 2
+    },
+    "12": {
+        "id": 12,
+        "name": "DS",
+        "category": 2,
+        "order": 10
+    },
+    "13": {
+        "id": 13,
+        "name": "NES",
+        "category": 2,
+        "order": 0
+    },
+    "14": {
+        "id": 14,
+        "name": "PC",
+        "category": 1,
+        "order": 22
+    },
+    "16": {
+        "id": 16,
+        "name": "PlayStation",
+        "category": 3,
+        "order": 12
+    },
+    "17": {
+        "id": 17,
+        "name": "PlayStation 2",
+        "category": 3,
+        "order": 13
+    },
+    "18": {
+        "id": 18,
+        "name": "PlayStation 3",
+        "category": 3,
+        "order": 14
+    },
+    "21": {
+        "id": 21,
+        "name": "PlayStation Portable",
+        "category": 3,
+        "order": 16
+    },
+    "22": {
+        "id": 22,
+        "name": "Super Nintendo",
+        "category": 2,
+        "order": 1
+    },
+    "23": {
+        "id": 23,
+        "name": "Wii",
+        "category": 2,
+        "order": 4
+    },
+    "24": {
+        "id": 24,
+        "name": "Wii U",
+        "category": 2,
+        "order": 5
+    },
+    "27": {
+        "id": 27,
+        "name": "Xbox",
+        "category": 5,
+        "order": 17
+    },
+    "28": {
+        "id": 28,
+        "name": "Xbox 360",
+        "category": 5,
+        "order": 18
+    },
+    "30": {
+        "id": 30,
+        "name": "Xbox One",
+        "category": 5,
+        "order": 19
+    },
+    "33": {
+        "id": 33,
+        "name": "PlayStation 4",
+        "category": 3,
+        "order": 15
+    },
+    "34": {
+        "id": 34,
+        "name": "Oculus Rift",
+        "category": 1,
+        "order": 23
+    },
+    "35": {
+        "id": 35,
+        "name": "Switch",
+        "category": 2,
+        "order": 6
+    }
+}

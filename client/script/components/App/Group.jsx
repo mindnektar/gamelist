@@ -8,7 +8,7 @@ class Group extends React.Component {
         let games = Object.values(this.props.games);
 
         if (this.props.groupBy) {
-            games = games.filter(game => game[this.props.groupBy] === this.props.id);
+            games = games.filter(game => game[this.props.groupBy] === this.props._id);
         }
 
         if (this.props.genreFilter.length > 0) {
@@ -39,7 +39,7 @@ class Group extends React.Component {
 
                 {games.map(game =>
                     <Game
-                        key={game.id}
+                        key={game._id}
                         {...game}
                     />
                 )}
@@ -49,10 +49,10 @@ class Group extends React.Component {
 }
 
 Group.propTypes = {
+    _id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
     games: PropTypes.object.isRequired,
     genreFilter: PropTypes.array.isRequired,
     groupBy: PropTypes.string.isRequired,
-    id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
     name: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
 };
 

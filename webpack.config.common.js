@@ -1,13 +1,10 @@
-/* eslint-disable */
-const webpack = require('webpack');
-const fs = require('fs');
 const path = require('path');
 
 module.exports = {
     context: __dirname,
 
     entry: {
-        main: './script/main.jsx',
+        app: './client/script/app.jsx',
     },
 
     output: {
@@ -19,10 +16,10 @@ module.exports = {
     resolve: {
         extensions: ['.js', '.jsx'],
         modules: [
-            path.join(__dirname, 'script'),
-            path.join(__dirname, 'script/components/ui'),
-            path.join(__dirname, 'node_modules'),
-        ]
+            'client/script',
+            'client/script/components/ui',
+            'node_modules',
+        ],
     },
 
     module: {

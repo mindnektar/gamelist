@@ -7,7 +7,7 @@ import 'polyfills';
 import store, { browserHistory } from 'store';
 import App from './components/App';
 import ScrollToTop from './components/ScrollToTop';
-import '../style/main.sass';
+import '../style/app.sass';
 
 injectTapEventPlugin();
 

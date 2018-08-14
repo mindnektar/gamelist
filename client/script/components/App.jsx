@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import connectWithRouter from 'hoc/connectWithRouter';
 import { loadGames } from 'actions/games';
-import { loadDlcs } from 'actions/dlcs';
 import { loadSystems } from 'actions/systems';
 import { changeGrouping } from 'actions/ui';
 import Select from 'Select';
@@ -18,7 +17,6 @@ class App extends React.Component {
     componentWillMount() {
         Promise.all([
             this.props.loadGames(),
-            this.props.loadDlcs(),
             this.props.loadSystems(),
         ]).then(() => {
             this.setState({ loaded: true });
@@ -27,10 +25,10 @@ class App extends React.Component {
 
     getGroups() {
         if (!this.props.groupBy) {
-            return [{ id: '', name: 'All games' }];
+            return [{ _id: '', name: 'All games' }];
         }
 
-        if (this.props.groupBy === 'system') {
+        if (this.props.groupBy === 'systemId') {
             return Object.values(this.props.systems)
                 .sort((a, b) => a.order - b.order);
         }
@@ -41,7 +39,7 @@ class App extends React.Component {
                     return [
                         ...result,
                         {
-                            id: current[this.props.groupBy],
+                            _id: current[this.props.groupBy],
                             name: current[this.props.groupBy],
                         },
                     ];
@@ -92,7 +90,7 @@ class App extends React.Component {
 
                 {this.getGroups().map(group =>
                     <Group
-                        key={group.id}
+                        key={group._id}
                         {...group}
                     />
                 )}
@@ -106,7 +104,6 @@ App.propTypes = {
     editing: PropTypes.bool.isRequired,
     games: PropTypes.object.isRequired,
     groupBy: PropTypes.string.isRequired,
-    loadDlcs: PropTypes.func.isRequired,
     loadGames: PropTypes.func.isRequired,
     loadSystems: PropTypes.func.isRequired,
     systems: PropTypes.object.isRequired,
@@ -121,7 +118,6 @@ export default connectWithRouter(
     }),
     {
         changeGrouping,
-        loadDlcs,
         loadGames,
         loadSystems,
     },

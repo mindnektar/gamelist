@@ -6,7 +6,12 @@ export const loadSystems = () => dispatch => (
     api.loadSystems().then((systems) => {
         dispatch({
             type: LOAD_SYSTEMS,
-            payload: { systems },
+            payload: {
+                systems: systems.reduce((result, current) => ({
+                    ...result,
+                    [current._id]: current,
+                }), {}),
+            },
         });
     })
 );

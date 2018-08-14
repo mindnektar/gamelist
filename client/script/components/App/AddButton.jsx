@@ -19,7 +19,7 @@ class AddButton extends React.Component {
     getSystems() {
         return Object.values(this.props.systems)
             .sort((a, b) => a.order - b.order)
-            .map(system => ({ key: system.id, label: system.name }));
+            .map(system => ({ key: system._id, label: system.name }));
     }
 
     changeSystem = (event) => {

@@ -4,7 +4,7 @@ import { createReducer } from './_helpers';
 export default createReducer({
     expandedGame: null,
     genreFilter: [],
-    groupBy: 'system',
+    groupBy: 'systemId',
 }, {
     [actions.CHANGE_GENRE_FILTER]: (state, action) => ({
         ...state,
