@@ -13,6 +13,7 @@ const config = convict({
             doc: 'express server port',
             format: 'port',
             default: 4001,
+            env: 'PORT',
         },
         webpackDevServer: {
             doc: 'webpack development server port',
