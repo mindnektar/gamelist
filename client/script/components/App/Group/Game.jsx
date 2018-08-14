@@ -160,7 +160,7 @@ class Game extends React.Component {
                                                             >
                                                                 <div>{dlc.title}</div>
 
-                                                                <Rating value={dlc.rating} />
+                                                                <Rating value={dlc.rating / 10} />
                                                             </div>
                                                         )}
                                                     </div>
