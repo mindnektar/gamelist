@@ -7,7 +7,7 @@ import Button from 'Button';
 import Select from 'Select';
 
 const editableAttributes = [
-    'title', 'compilation', 'system', 'rating', 'genre', 'developer', 'release', 'youTubeId',
+    'title', 'compilation', 'systemId', 'rating', 'genre', 'developer', 'release', 'youTubeId',
     'description',
 ];
 
@@ -29,7 +29,7 @@ class Editor extends React.Component {
     getSystems() {
         return Object.values(this.props.systems)
             .sort((a, b) => a.order - b.order)
-            .map(system => ({ key: system.id, label: system.name }));
+            .map(system => ({ key: system._id, label: system.name }));
     }
 
     changeGiantBombIndex = (event) => {
@@ -37,12 +37,12 @@ class Editor extends React.Component {
     }
 
     deleteGame = () => {
-        this.props.deleteGame(this.props.id);
+        this.props.deleteGame(this.props._id);
     }
 
     fillGameData = () => {
         this.props.fillGameData(
-            this.props.id,
+            this.props._id,
             parseInt(this.state.giantBombIndex, 10)
         ).then((game) => {
             this.setState({
@@ -80,7 +80,7 @@ class Editor extends React.Component {
     renderInput = (type) => {
         const label = type[0].toUpperCase() + type.substring(1);
 
-        if (type === 'system') {
+        if (type === 'systemId') {
             return (
                 <Select
                     items={this.getSystems()}
@@ -135,7 +135,7 @@ Editor.propTypes = {
     controller: PropTypes.func.isRequired,
     deleteGame: PropTypes.func.isRequired,
     fillGameData: PropTypes.func.isRequired,
-    id: PropTypes.string.isRequired,
+    _id: PropTypes.string.isRequired,
     systems: PropTypes.object.isRequired,
 };
 

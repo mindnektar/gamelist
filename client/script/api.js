@@ -36,11 +36,11 @@ const request = (path, method = 'GET', body) => (
 ));
 
 export default {
-    createGame: (title, system) => request('games', 'POST', { title, system }),
+    createGame: (title, systemId) => request('games', 'POST', { title, systemId }),
     deleteGame: id => request(`games/${id}`, 'DELETE'),
     fillGameData: (id, giantBombIndex = 0) => request(`games/${id}/fill/${giantBombIndex}`),
     loadDlcs: () => request('dlcs'),
     loadGames: () => request('games'),
     loadSystems: () => request('systems'),
-    saveGame: (id, data) => request('games', 'PATCH', { id, data }),
+    saveGame: (id, data) => request(`games/${id}`, 'PATCH', data),
 };

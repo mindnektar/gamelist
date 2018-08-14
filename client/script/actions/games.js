@@ -5,8 +5,8 @@ export const DELETE_GAME = 'DELETE_GAME';
 export const LOAD_GAMES = 'LOAD_GAMES';
 export const SAVE_GAME = 'SAVE_GAME';
 
-export const createGame = (title, system) => dispatch => (
-    api.createGame(title, system).then((game) => {
+export const createGame = (title, systemId) => dispatch => (
+    api.createGame(title, systemId).then((game) => {
         dispatch({
             type: CREATE_GAME,
             payload: { game },
@@ -16,20 +16,20 @@ export const createGame = (title, system) => dispatch => (
     })
 );
 
-export const deleteGame = id => dispatch => (
-    api.deleteGame(id).then(() => {
+export const deleteGame = _id => dispatch => (
+    api.deleteGame(_id).then(() => {
         dispatch({
             type: DELETE_GAME,
-            payload: { id },
+            payload: { _id },
         });
     })
 );
 
-export const fillGameData = (id, giantBombIndex) => dispatch => (
-    api.fillGameData(id, giantBombIndex).then((data) => {
+export const fillGameData = (_id, giantBombIndex) => dispatch => (
+    api.fillGameData(_id, giantBombIndex).then((data) => {
         dispatch({
             type: SAVE_GAME,
-            payload: { id, data },
+            payload: { _id, data },
         });
 
         return data;
@@ -50,11 +50,11 @@ export const loadGames = () => dispatch => (
     })
 );
 
-export const saveGame = (id, data) => (dispatch) => {
+export const saveGame = (_id, data) => (dispatch) => {
     dispatch({
         type: SAVE_GAME,
-        payload: { id, data },
+        payload: { _id, data },
     });
 
-    return api.saveGame(id, data);
+    return api.saveGame(_id, data);
 };

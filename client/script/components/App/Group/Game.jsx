@@ -16,7 +16,7 @@ class Game extends React.Component {
 
     getGenres() {
         return this.props.genre ?
-            this.props.genre.sort((a, b) => a.localeCompare(b)) :
+            this.props.genre.split(',').sort((a, b) => a.localeCompare(b)) :
             [];
     }
 
@@ -191,7 +191,7 @@ Game.defaultProps = {
     compilation: '',
     description: '',
     developer: '',
-    genre: [],
+    genre: '',
     rating: 0,
     release: null,
     youTubeId: null,
@@ -205,7 +205,7 @@ Game.propTypes = {
     dlcs: PropTypes.array.isRequired,
     editing: PropTypes.bool.isRequired,
     expanded: PropTypes.bool.isRequired,
-    genre: PropTypes.array,
+    genre: PropTypes.string,
     genreFilter: PropTypes.array.isRequired,
     groupBy: PropTypes.string.isRequired,
     rating: PropTypes.number,

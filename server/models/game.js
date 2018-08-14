@@ -19,7 +19,7 @@ const GameSchema = new mongoose.Schema({
     },
     rating: ratingDefinition,
     genre: {
-        type: [String],
+        type: String,
     },
     release: {
         type: Number,

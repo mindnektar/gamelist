@@ -12,7 +12,7 @@ import Select from 'Select';
 class AddButton extends React.Component {
     state = {
         expanded: false,
-        system: 'd6cc7b4a-e309-4232-8d11-60facd967de7',
+        systemId: this.getSystems()[0].key,
         title: '',
     }
 
@@ -23,7 +23,7 @@ class AddButton extends React.Component {
     }
 
     changeSystem = (event) => {
-        this.setState({ system: event.target.value });
+        this.setState({ systemId: event.target.value });
     }
 
     changeTitle = (event) => {
@@ -33,10 +33,10 @@ class AddButton extends React.Component {
     save = () => {
         this.toggleExpanded();
 
-        this.props.createGame(this.state.title, this.state.system).then((game) => {
-            scrollToGame(game.id);
+        this.props.createGame(this.state.title, this.state.systemId).then((game) => {
+            scrollToGame(game._id);
 
-            this.props.toggleGame(game.id);
+            this.props.toggleGame(game._id);
         });
     }
 
@@ -72,7 +72,7 @@ class AddButton extends React.Component {
                             items={this.getSystems()}
                             label="System"
                             onChange={this.changeSystem}
-                            value={this.state.system}
+                            value={this.state.systemId}
                         />
                     </div>
 
