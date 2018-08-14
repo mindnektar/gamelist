@@ -34,7 +34,7 @@ var GameSchema = new _mongoose2.default.Schema({
     },
     rating: ratingDefinition,
     genre: {
-        type: [String]
+        type: String
     },
     release: {
         type: Number,
