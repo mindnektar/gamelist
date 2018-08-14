@@ -8,7 +8,7 @@
     "build-server": "babel server -d server-dist --ignore node_modules --presets env --plugins transform-object-rest-spread",
     "build": "npm run build-frontend; npm run build-server; git add .; git commit -m \"bundle js\"",
     "start": "node server-dist/app.js",
-    "postinstall": "cd ./server && npm install"
+    "postinstall": "cd server && npm install"
   },
   "dependencies": {
     "classnames": "2.2.5",
