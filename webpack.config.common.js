@@ -50,6 +50,14 @@ module.exports = {
                     { loader: 'import-glob-loader' },
                 ],
             },
+
+            {
+                test: /\.gql$/,
+                exclude: [/node_modules/],
+                use: [
+                    { loader: 'graphql-tag/loader' },
+                ],
+            },
         ],
     },
 };

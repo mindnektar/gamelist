@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import connectWithRouter from 'hoc/connectWithRouter';
 
 class Rating extends React.Component {
     render() {
@@ -27,8 +26,4 @@ Rating.propTypes = {
     value: PropTypes.number,
 };
 
-export default connectWithRouter(
-    null,
-    null,
-    Rating
-);
+export default Rating;

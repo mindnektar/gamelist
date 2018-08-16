@@ -1,46 +1,39 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import connectWithRouter from 'hoc/connectWithRouter';
-import { loadGames } from 'actions/games';
-import { loadSystems } from 'actions/systems';
-import { changeGrouping } from 'actions/ui';
+import { withRouter } from 'react-router-dom';
+import { graphql } from 'react-apollo';
+import GetGames from 'queries/games/GetGames.gql';
 import Select from 'Select';
 import Group from './App/Group';
 import Header from './App/Header';
 import AddButton from './App/AddButton';
 
 class App extends React.Component {
-    state = {
-        loaded: false,
-    }
-
-    componentWillMount() {
-        Promise.all([
-            this.props.loadGames(),
-            this.props.loadSystems(),
-        ]).then(() => {
-            this.setState({ loaded: true });
-        });
-    }
-
     getGroups() {
-        if (!this.props.groupBy) {
+        if (!this.props.data.ui.groupBy) {
             return [{ _id: '', name: 'All games' }];
         }
 
-        if (this.props.groupBy === 'systemId') {
-            return Object.values(this.props.systems)
+        if (this.props.data.ui.groupBy === 'systemId') {
+            return this.props.data.games
+                .reduce((result, current) => {
+                    if (result.find(system => system._id === current.system._id)) {
+                        return result;
+                    }
+
+                    return [...result, current.system];
+                }, [])
                 .sort((a, b) => a.order - b.order);
         }
 
-        return Object.values(this.props.games)
+        return this.props.data.games
             .reduce((result, current) => {
-                if (!result.find(group => `${group.name}` === `${current[this.props.groupBy]}`)) {
+                if (!result.find(group => `${group.name}` === `${current[this.props.data.ui.groupBy]}`)) {
                     return [
                         ...result,
                         {
-                            _id: current[this.props.groupBy],
-                            name: current[this.props.groupBy],
+                            _id: current[this.props.data.ui.groupBy],
+                            name: current[this.props.data.ui.groupBy],
                         },
                     ];
                 }
@@ -49,7 +42,7 @@ class App extends React.Component {
             }, [])
             .sort((a, b) => {
                 if (typeof a.name === 'number') {
-                    if (this.props.groupBy === 'rating') {
+                    if (this.props.data.ui.groupBy === 'rating') {
                         return b.name - a.name;
                     }
 
@@ -65,11 +58,11 @@ class App extends React.Component {
     }
 
     render() {
-        return this.state.loaded && (
+        return !this.props.data.loading && (
             <div className="gamelist">
                 <Header />
 
-                {this.props.editing &&
+                {this.props.location.pathname === '/edit' &&
                     <AddButton />
                 }
 
@@ -84,7 +77,7 @@ class App extends React.Component {
                         ]}
                         label="Group by"
                         onChange={this.changeGrouping}
-                        value={this.props.groupBy}
+                        value={this.props.data.ui.groupBy}
                     />
                 </div>
 
@@ -100,26 +93,12 @@ class App extends React.Component {
 }
 
 App.propTypes = {
-    changeGrouping: PropTypes.func.isRequired,
-    editing: PropTypes.bool.isRequired,
-    games: PropTypes.object.isRequired,
-    groupBy: PropTypes.string.isRequired,
-    loadGames: PropTypes.func.isRequired,
-    loadSystems: PropTypes.func.isRequired,
-    systems: PropTypes.object.isRequired,
+    data: PropTypes.shape({
+        games: PropTypes.array,
+        ui: PropTypes.object,
+        loading: PropTypes.bool.isRequired,
+    }).isRequired,
+    location: PropTypes.object.isRequired,
 };
 
-export default connectWithRouter(
-    (state, ownProps) => ({
-        editing: ownProps.location.pathname === '/edit',
-        games: state.games,
-        groupBy: state.ui.groupBy,
-        systems: state.systems,
-    }),
-    {
-        changeGrouping,
-        loadGames,
-        loadSystems,
-    },
-    App
-);
+export default graphql(GetGames)(withRouter(App));

@@ -1,27 +1,23 @@
 /* eslint-disable no-console */
-import bodyParser from 'body-parser';
-import fs from 'fs';
-import path from 'path';
 import express from 'express';
+import path from 'path';
+import { GraphQLServer } from 'graphql-yoga';
+import { fileLoader, mergeTypes, mergeResolvers } from 'merge-graphql-schemas';
 import config from './config';
 
-const app = express();
-
-app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, '../public')));
-
-app.use((request, response, next) => {
-    response.setHeader('Access-Control-Allow-Origin', `http://localhost:${config.get('ports').webpackDevServer}`);
-    response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    response.setHeader('Access-Control-Allow-Headers', 'content-type');
-
-    next();
+const server = new GraphQLServer({
+    typeDefs: mergeTypes(fileLoader(path.join(__dirname, 'typeDefs'))),
+    resolvers: mergeResolvers(fileLoader(path.join(__dirname, 'resolvers'))),
 });
 
-fs.readdirSync(path.join(__dirname, 'api')).forEach((file) => {
-    app.use('/api', require(`./api/${file}`).default);
-});
+server.express.use(express.static(path.join(__dirname, '../public')));
 
-app.listen(config.get('ports').express, () => {
+server.start({
+    port: config.get('ports').express,
+    endpoint: '/api',
+    playground: '/api',
+}, () => {
     console.log(`Server running at http://localhost:${config.get('ports').express}`);
 });
+
+process.on('SIGINT', () => { process.exit(); });

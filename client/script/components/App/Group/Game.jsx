@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
+import { graphql } from 'react-apollo';
+import GetGames from 'queries/games/GetGames.gql';
 import classNames from 'classnames';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
-import connectWithRouter from 'hoc/connectWithRouter';
 import scrollToGame from 'helpers/scrollToGame';
-import { saveGame } from 'actions/games';
-import { toggleGame, toggleGenreFilter } from 'actions/ui';
 import Rating from './Game/Rating';
 import Editor from './Game/Editor';
 
@@ -51,7 +51,7 @@ class Game extends React.Component {
                 className={classNames(
                     'game',
                     {
-                        'game--expanded': this.props.expanded,
+                        'game--expanded': this.props.data.ui.expandedGame === this.props._id,
                         'game--editing': this.state.editing,
                     }
                 )}
@@ -59,7 +59,7 @@ class Game extends React.Component {
             >
                 <div
                     className="game__head"
-                    onTouchTap={this.toggleExpanded}
+                    onClick={this.toggleExpanded}
                 >
                     <div className="game__title">
                         {this.props.title}
@@ -82,41 +82,41 @@ class Game extends React.Component {
                             <span
                                 className={classNames(
                                     'game__genre-item',
-                                    { 'game__genre-item--active': this.props.genreFilter.includes(genre) }
+                                    { 'game__genre-item--active': this.props.data.ui.genreFilter.includes(genre) }
                                 )}
                                 key={genre}
-                                onTouchTap={this.toggleGenreFilterHandler(genre)}
+                                onClick={this.toggleGenreFilterHandler(genre)}
                             >
                                 {genre.trim()}
                             </span>
                         )}
                     </div>
 
-                    {this.props.groupBy !== 'system' &&
+                    {this.props.data.ui.groupBy !== 'system' &&
                         <div className="game__system">
-                            {this.props.systems[this.props.systemId].name}
+                            {this.props.system.name}
                         </div>
                     }
 
-                    {this.props.groupBy !== 'developer' &&
+                    {this.props.data.ui.groupBy !== 'developer' &&
                         <div className="game__developer">
                             {this.props.developer}
                         </div>
                     }
 
-                    {this.props.groupBy !== 'release' &&
+                    {this.props.data.ui.groupBy !== 'release' &&
                         <div className="game__release">
                             {this.props.release}
                         </div>
                     }
 
-                    {this.props.groupBy !== 'rating' &&
+                    {this.props.data.ui.groupBy !== 'rating' &&
                         <Rating value={this.props.rating / 10} />
                     }
                 </div>
 
                 <TransitionGroup>
-                    {this.props.expanded &&
+                    {this.props.data.ui.expandedGame === this.props._id &&
                         <CSSTransition
                             classNames="game"
                             key={this.props._id}
@@ -128,7 +128,7 @@ class Game extends React.Component {
                             unmountOnExit
                         >
                             <div className="game__body">
-                                {this.state.editing && this.props.editing ? (
+                                {this.state.editing && this.props.location.pathname === '/edit' ? (
                                     <Editor
                                         {...this.props}
                                         controller={this.setEditorController}
@@ -170,10 +170,10 @@ class Game extends React.Component {
                                     </div>
                                 )}
 
-                                {this.props.editing &&
+                                {this.props.location.pathname === '/edit' &&
                                     <div
                                         className="game__edit-button material-icons"
-                                        onTouchTap={this.toggleEditing}
+                                        onClick={this.toggleEditing}
                                     >
                                         {this.state.editing ? 'close' : 'mode_edit'}
                                     </div>
@@ -200,37 +200,22 @@ Game.defaultProps = {
 Game.propTypes = {
     _id: PropTypes.string.isRequired,
     compilation: PropTypes.string,
+    data: PropTypes.shape({
+        ui: PropTypes.object,
+    }).isRequired,
     description: PropTypes.string,
     developer: PropTypes.string,
     dlcs: PropTypes.array.isRequired,
-    editing: PropTypes.bool.isRequired,
-    expanded: PropTypes.bool.isRequired,
     genre: PropTypes.string,
-    genreFilter: PropTypes.array.isRequired,
-    groupBy: PropTypes.string.isRequired,
+    location: PropTypes.object.isRequired,
     rating: PropTypes.number,
     release: PropTypes.number,
     saveGame: PropTypes.func.isRequired,
-    systemId: PropTypes.string.isRequired,
-    systems: PropTypes.object.isRequired,
+    system: PropTypes.object.isRequired,
     title: PropTypes.string.isRequired,
     toggleGame: PropTypes.func.isRequired,
     toggleGenreFilter: PropTypes.func.isRequired,
     youTubeId: PropTypes.string,
 };
 
-export default connectWithRouter(
-    (state, ownProps) => ({
-        editing: ownProps.location.pathname === '/edit',
-        expanded: state.ui.expandedGame === ownProps._id,
-        genreFilter: state.ui.genreFilter,
-        groupBy: state.ui.groupBy,
-        systems: state.systems,
-    }),
-    {
-        saveGame,
-        toggleGame,
-        toggleGenreFilter,
-    },
-    Game
-);
+export default graphql(GetGames)(withRouter(Game));

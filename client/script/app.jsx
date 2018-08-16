@@ -1,25 +1,39 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
 import { Router } from 'react-router-dom';
-import injectTapEventPlugin from 'react-tap-event-plugin';
+import ApolloClient from 'apollo-boost';
+import { ApolloProvider } from 'react-apollo';
 import 'polyfills';
-import store, { browserHistory } from 'store';
+import createHistory from 'history/createHashHistory';
 import App from './components/App';
 import ScrollToTop from './components/ScrollToTop';
 import '../style/app.sass';
 
-injectTapEventPlugin();
+const client = new ApolloClient({
+    uri: '/api',
+    clientState: {
+        defaults: {
+            ui: {
+                __typename: 'Ui',
+                expandedGame: null,
+                genreFilter: [],
+                groupBy: 'systemId',
+            },
+        },
+        resolvers: {
+        },
+    },
+});
 
 const render = (AppComponent) => {
     ReactDOM.render(
-        <Provider store={store}>
-            <Router history={browserHistory}>
+        <ApolloProvider client={client}>
+            <Router history={createHistory()}>
                 <ScrollToTop>
                     <AppComponent />
                 </ScrollToTop>
             </Router>
-        </Provider>,
+        </ApolloProvider>,
         document.getElementById('app'),
     );
 };
@@ -29,9 +43,5 @@ render(App);
 if (module.hot) {
     module.hot.accept('./components/App', () => {
         render(require('./components/App').default);
-    });
-
-    module.hot.accept('./reducers', () => {
-        store.replaceReducer(require('./reducers').default);
     });
 }

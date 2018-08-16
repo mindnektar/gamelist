@@ -1,21 +1,28 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import connectWithRouter from 'hoc/connectWithRouter';
+import { graphql } from 'react-apollo';
+import GetGames from 'queries/games/GetGames.gql';
 import Game from './Group/Game';
 
 class Group extends React.Component {
     filteredGames() {
-        let games = Object.values(this.props.games);
+        let games = this.props.data.games;
 
-        if (this.props.groupBy) {
-            games = games.filter(game => game[this.props.groupBy] === this.props._id);
+        if (this.props.data.ui.groupBy) {
+            games = games.filter((game) => {
+                const groupBy = this.props.data.ui.groupBy === 'systemId' ?
+                    game.system._id :
+                    game[this.props.data.ui.groupBy];
+
+                return groupBy === this.props._id;
+            });
         }
 
-        if (this.props.genreFilter.length > 0) {
+        if (this.props.data.ui.genreFilter.length > 0) {
             games = games.filter((game) => {
                 const genres = game.genre.split(',');
 
-                return this.props.genreFilter.every(genre => genres.includes(genre));
+                return this.props.data.ui.genreFilter.every(genre => genres.includes(genre));
             });
         }
 
@@ -50,18 +57,11 @@ class Group extends React.Component {
 
 Group.propTypes = {
     _id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-    games: PropTypes.object.isRequired,
-    genreFilter: PropTypes.array.isRequired,
-    groupBy: PropTypes.string.isRequired,
+    data: PropTypes.shape({
+        games: PropTypes.array,
+        ui: PropTypes.object,
+    }).isRequired,
     name: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
 };
 
-export default connectWithRouter(
-    state => ({
-        games: state.games,
-        genreFilter: state.ui.genreFilter,
-        groupBy: state.ui.groupBy,
-    }),
-    null,
-    Group
-);
+export default graphql(GetGames)(Group);

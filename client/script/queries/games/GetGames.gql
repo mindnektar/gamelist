@@ -1,0 +1,27 @@
+query GetGames {
+    games {
+        _id
+        system {
+            _id
+            name
+            order
+        }
+        title
+        rating
+        genre
+        release
+        developer
+        description
+        youTubeId
+        compilation
+        dlcs {
+            title
+            rating
+        }
+    }
+    ui @client {
+        genreFilter
+        groupBy
+        expandedGame
+    }
+}

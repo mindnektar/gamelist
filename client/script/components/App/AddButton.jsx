@@ -1,10 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import connectWithRouter from 'hoc/connectWithRouter';
+import { graphql } from 'react-apollo';
+import GetSystems from 'queries/systems/GetSystems.gql';
 import scrollToGame from 'helpers/scrollToGame';
-import { createGame } from 'actions/games';
-import { toggleGame } from 'actions/ui';
 import Button from 'Button';
 import TextField from 'TextField';
 import Select from 'Select';
@@ -17,7 +16,7 @@ class AddButton extends React.Component {
     }
 
     getSystems() {
-        return Object.values(this.props.systems)
+        return this.props.data.systems
             .sort((a, b) => a.order - b.order)
             .map(system => ({ key: system._id, label: system.name }));
     }
@@ -54,7 +53,7 @@ class AddButton extends React.Component {
             >
                 <div
                     className="add-button__head"
-                    onTouchTap={this.toggleExpanded}
+                    onClick={this.toggleExpanded}
                 >
                     Add game
                 </div>
@@ -76,7 +75,7 @@ class AddButton extends React.Component {
                         />
                     </div>
 
-                    <Button onTouchTap={this.save}>
+                    <Button onClick={this.save}>
                         Save
                     </Button>
                 </div>
@@ -87,17 +86,10 @@ class AddButton extends React.Component {
 
 AddButton.propTypes = {
     createGame: PropTypes.func.isRequired,
-    systems: PropTypes.object.isRequired,
+    data: PropTypes.shape({
+        systems: PropTypes.array,
+    }).isRequired,
     toggleGame: PropTypes.func.isRequired,
 };
 
-export default connectWithRouter(
-    state => ({
-        systems: state.systems,
-    }),
-    {
-        createGame,
-        toggleGame,
-    },
-    AddButton
-);
+export default graphql(GetSystems)(AddButton);

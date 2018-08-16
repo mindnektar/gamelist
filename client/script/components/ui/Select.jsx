@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import connectWithRouter from 'hoc/connectWithRouter';
 
 class Select extends React.Component {
     render() {
@@ -38,8 +37,4 @@ Select.propTypes = {
     value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
 };
 
-export default connectWithRouter(
-    null,
-    null,
-    Select
-);
+export default Select;

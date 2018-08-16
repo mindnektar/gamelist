@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import connectWithRouter from 'hoc/connectWithRouter';
-import { deleteGame, fillGameData } from 'actions/games';
+import { graphql } from 'react-apollo';
+import GetSystems from 'queries/systems/GetSystems.gql';
 import TextField from 'TextField';
 import Button from 'Button';
 import Select from 'Select';
@@ -27,7 +27,7 @@ class Editor extends React.Component {
     }
 
     getSystems() {
-        return Object.values(this.props.systems)
+        return this.props.data.systems
             .sort((a, b) => a.order - b.order)
             .map(system => ({ key: system._id, label: system.name }));
     }
@@ -118,11 +118,11 @@ class Editor extends React.Component {
                     </TextField>
                 </div>
 
-                <Button onTouchTap={this.fillGameData}>Fill</Button>
+                <Button onClick={this.fillGameData}>Fill</Button>
 
                 <div
                     className="game__delete-button material-icons"
-                    onTouchTap={this.deleteGame}
+                    onClick={this.deleteGame}
                 >
                     delete
                 </div>
@@ -133,19 +133,12 @@ class Editor extends React.Component {
 
 Editor.propTypes = {
     controller: PropTypes.func.isRequired,
+    data: PropTypes.shape({
+        systems: PropTypes.array,
+    }).isRequired,
     deleteGame: PropTypes.func.isRequired,
     fillGameData: PropTypes.func.isRequired,
     _id: PropTypes.string.isRequired,
-    systems: PropTypes.object.isRequired,
 };
 
-export default connectWithRouter(
-    state => ({
-        systems: state.systems,
-    }),
-    {
-        deleteGame,
-        fillGameData,
-    },
-    Editor
-);
+export default graphql(GetSystems)(Editor);

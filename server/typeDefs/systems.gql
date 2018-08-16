@@ -1,0 +1,25 @@
+type Query {
+    system(_id: ID!): System
+    systems: [System]!
+}
+
+type Mutation {
+    createSystem(input: CreateSystemInput!): System!
+    updateSystem(_id: ID!, input: UpdateSystemInput!): System!
+    deleteSystem(_id: ID!): System!
+}
+
+type System {
+    _id: ID!
+    name: String!
+    order: Int!
+}
+
+input CreateSystemInput {
+    name: String!
+}
+
+input UpdateSystemInput {
+    name: String
+    order: Int
+}
