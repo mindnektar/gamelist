@@ -23,14 +23,14 @@ const client = new ApolloClient({
         },
         resolvers: {
             Mutation: {
-                updateUi: (_, { ui }, { cache }) => {
+                updateUi: (_, { input }, { cache }) => {
                     cache.writeQuery({
                         query: GetUi,
                         data: {
                             ui: {
                                 __typename: 'Ui',
                                 ...cache.readQuery({ query: GetUi }).ui,
-                                ...ui,
+                                ...input,
                             },
                         },
                     });

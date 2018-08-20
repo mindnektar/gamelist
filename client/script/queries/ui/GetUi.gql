@@ -1,7 +1,7 @@
+#import "./UiFields.fragment.gql"
+
 query GetUi {
     ui @client {
-        expandedGame
-        genreFilter
-        groupBy
+        ...UiFields
     }
 }

@@ -5,6 +5,7 @@ import graphqlQuery from 'graphqlQuery';
 import GetGames from 'queries/games/GetGames.gql';
 import GetSystems from 'queries/systems/GetSystems.gql';
 import GetUi from 'queries/ui/GetUi.gql';
+import UpdateUi from 'queries/ui/UpdateUi.gql';
 import Select from 'Select';
 import Group from './App/Group';
 import Header from './App/Header';
@@ -12,43 +13,46 @@ import AddButton from './App/AddButton';
 
 class App extends React.Component {
     getGroups() {
+        const games = [...this.props.games.data];
+
         if (!this.props.ui.data.groupBy) {
-            return [{ _id: '', name: 'All games' }];
+            return [{ name: 'All games', games }];
         }
 
-        if (this.props.ui.data.groupBy === 'systemId') {
-            return [...this.props.systems.data].sort((a, b) => a.order - b.order);
-        }
+        const groups = games.reduce((result, current) => {
+            const name = this.props.ui.data.groupBy === 'systemId' ?
+                current.system.name :
+                current[this.props.ui.data.groupBy];
 
-        return this.props.games.data
-            .reduce((result, current) => {
-                if (!result.find(group => `${group.name}` === `${current[this.props.ui.data.groupBy]}`)) {
-                    return [
-                        ...result,
-                        {
-                            _id: current[this.props.ui.data.groupBy],
-                            name: current[this.props.ui.data.groupBy],
-                        },
-                    ];
+            if (name) {
+                result[name] = result[name] || { name, games: [] };
+                result[name].games.push(current);
+            }
+
+            return result;
+        }, {});
+
+        return Object.values(groups).sort((a, b) => {
+            if (typeof a.name === 'number') {
+                if (this.props.ui.data.groupBy === 'rating') {
+                    return b.name - a.name;
                 }
 
-                return result;
-            }, [])
-            .sort((a, b) => {
-                if (typeof a.name === 'number') {
-                    if (this.props.ui.data.groupBy === 'rating') {
-                        return b.name - a.name;
-                    }
+                return a.name - b.name;
+            }
 
-                    return a.name - b.name;
-                }
-
-                return a.name.localeCompare(b.name);
-            });
+            return a.name.localeCompare(b.name);
+        });
     }
 
     changeGrouping = (event) => {
-        this.props.changeGrouping(event.target.value);
+        this.props.updateUi({
+            variables: {
+                input: {
+                    groupBy: event.target.value,
+                },
+            },
+        });
     }
 
     render() {
@@ -66,7 +70,7 @@ class App extends React.Component {
                     <div className="gamelist__grouping">
                         <Select
                             items={[
-                                { key: 'system', label: 'System' },
+                                { key: 'systemId', label: 'System' },
                                 { key: 'developer', label: 'Developer' },
                                 { key: 'release', label: 'Release year' },
                                 { key: 'rating', label: 'Rating' },
@@ -78,12 +82,12 @@ class App extends React.Component {
                         />
                     </div>
 
-                    {this.getGroups().map(group =>
+                    {this.getGroups().map(group => (
                         <Group
-                            key={group._id}
+                            key={group.name}
                             {...group}
                         />
-                    )}
+                    ))}
                 </div>
             )
         );
@@ -95,6 +99,7 @@ App.propTypes = {
     location: PropTypes.object.isRequired,
     systems: PropTypes.object.isRequired,
     ui: PropTypes.object.isRequired,
+    updateUi: PropTypes.func.isRequired,
 };
 
-export default graphqlQuery([GetGames, GetSystems, GetUi], withRouter(App));
+export default graphqlQuery([GetGames, GetSystems, GetUi, UpdateUi], withRouter(App));

@@ -1,23 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import graphqlQuery from 'graphqlQuery';
-import GetGames from 'queries/games/GetGames.gql';
 import GetUi from 'queries/ui/GetUi.gql';
 import Game from './Group/Game';
 
 class Group extends React.Component {
     filteredGames() {
-        let games = [...this.props.games.data];
-
-        if (this.props.ui.data.groupBy) {
-            games = games.filter((game) => {
-                const groupBy = this.props.ui.data.groupBy === 'systemId' ?
-                    game.system._id :
-                    game[this.props.ui.data.groupBy];
-
-                return groupBy === this.props._id;
-            });
-        }
+        let games = this.props.games;
 
         if (this.props.ui.data.genreFilter.length > 0) {
             games = games.filter((game) => {
@@ -57,10 +46,9 @@ class Group extends React.Component {
 }
 
 Group.propTypes = {
-    _id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-    games: PropTypes.object.isRequired,
+    games: PropTypes.array.isRequired,
     name: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
     ui: PropTypes.object.isRequired,
 };
 
-export default graphqlQuery([GetGames, GetUi], Group);
+export default graphqlQuery(GetUi, Group);
