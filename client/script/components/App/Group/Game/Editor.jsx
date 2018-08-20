@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
+import graphqlQuery from 'graphqlQuery';
 import GetSystems from 'queries/systems/GetSystems.gql';
 import TextField from 'TextField';
 import Button from 'Button';
@@ -27,7 +27,7 @@ class Editor extends React.Component {
     }
 
     getSystems() {
-        return this.props.data.systems
+        return this.props.systems.data
             .sort((a, b) => a.order - b.order)
             .map(system => ({ key: system._id, label: system.name }));
     }
@@ -133,12 +133,10 @@ class Editor extends React.Component {
 
 Editor.propTypes = {
     controller: PropTypes.func.isRequired,
-    data: PropTypes.shape({
-        systems: PropTypes.array,
-    }).isRequired,
+    systems: PropTypes.object.isRequired,
     deleteGame: PropTypes.func.isRequired,
     fillGameData: PropTypes.func.isRequired,
     _id: PropTypes.string.isRequired,
 };
 
-export default graphql(GetSystems)(Editor);
+export default graphqlQuery(GetSystems, Editor);

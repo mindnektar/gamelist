@@ -19,9 +19,4 @@ query GetGames {
             rating
         }
     }
-    ui @client {
-        genreFilter
-        groupBy
-        expandedGame
-    }
 }

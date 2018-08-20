@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-import { graphql } from 'react-apollo';
-import GetGames from 'queries/games/GetGames.gql';
+import graphqlQuery from 'graphqlQuery';
+import GetUi from 'queries/ui/GetUi.gql';
 import classNames from 'classnames';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import scrollToGame from 'helpers/scrollToGame';
@@ -51,7 +51,7 @@ class Game extends React.Component {
                 className={classNames(
                     'game',
                     {
-                        'game--expanded': this.props.data.ui.expandedGame === this.props._id,
+                        'game--expanded': this.props.ui.data.expandedGame === this.props._id,
                         'game--editing': this.state.editing,
                     }
                 )}
@@ -82,7 +82,7 @@ class Game extends React.Component {
                             <span
                                 className={classNames(
                                     'game__genre-item',
-                                    { 'game__genre-item--active': this.props.data.ui.genreFilter.includes(genre) }
+                                    { 'game__genre-item--active': this.props.ui.data.genreFilter.includes(genre) }
                                 )}
                                 key={genre}
                                 onClick={this.toggleGenreFilterHandler(genre)}
@@ -92,31 +92,31 @@ class Game extends React.Component {
                         )}
                     </div>
 
-                    {this.props.data.ui.groupBy !== 'system' &&
+                    {this.props.ui.data.groupBy !== 'system' &&
                         <div className="game__system">
                             {this.props.system.name}
                         </div>
                     }
 
-                    {this.props.data.ui.groupBy !== 'developer' &&
+                    {this.props.ui.data.groupBy !== 'developer' &&
                         <div className="game__developer">
                             {this.props.developer}
                         </div>
                     }
 
-                    {this.props.data.ui.groupBy !== 'release' &&
+                    {this.props.ui.data.groupBy !== 'release' &&
                         <div className="game__release">
                             {this.props.release}
                         </div>
                     }
 
-                    {this.props.data.ui.groupBy !== 'rating' &&
+                    {this.props.ui.data.groupBy !== 'rating' &&
                         <Rating value={this.props.rating / 10} />
                     }
                 </div>
 
                 <TransitionGroup>
-                    {this.props.data.ui.expandedGame === this.props._id &&
+                    {this.props.ui.data.expandedGame === this.props._id &&
                         <CSSTransition
                             classNames="game"
                             key={this.props._id}
@@ -200,9 +200,7 @@ Game.defaultProps = {
 Game.propTypes = {
     _id: PropTypes.string.isRequired,
     compilation: PropTypes.string,
-    data: PropTypes.shape({
-        ui: PropTypes.object,
-    }).isRequired,
+    ui: PropTypes.object.isRequired,
     description: PropTypes.string,
     developer: PropTypes.string,
     dlcs: PropTypes.array.isRequired,
@@ -218,4 +216,4 @@ Game.propTypes = {
     youTubeId: PropTypes.string,
 };
 
-export default graphql(GetGames)(withRouter(Game));
+export default graphqlQuery(GetUi, withRouter(Game));

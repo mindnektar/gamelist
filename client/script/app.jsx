@@ -3,8 +3,9 @@ import ReactDOM from 'react-dom';
 import { Router } from 'react-router-dom';
 import ApolloClient from 'apollo-boost';
 import { ApolloProvider } from 'react-apollo';
-import 'polyfills';
 import createHistory from 'history/createHashHistory';
+import 'polyfills';
+import GetUi from 'queries/ui/GetUi.gql';
 import App from './components/App';
 import ScrollToTop from './components/ScrollToTop';
 import '../style/app.sass';
@@ -21,6 +22,22 @@ const client = new ApolloClient({
             },
         },
         resolvers: {
+            Mutation: {
+                updateUi: (_, { ui }, { cache }) => {
+                    cache.writeQuery({
+                        query: GetUi,
+                        data: {
+                            ui: {
+                                __typename: 'Ui',
+                                ...cache.readQuery({ query: GetUi }).ui,
+                                ...ui,
+                            },
+                        },
+                    });
+
+                    return null;
+                },
+            },
         },
     },
 });

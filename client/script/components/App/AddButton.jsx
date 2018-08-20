@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { graphql } from 'react-apollo';
+import graphqlQuery from 'graphqlQuery';
 import GetSystems from 'queries/systems/GetSystems.gql';
 import scrollToGame from 'helpers/scrollToGame';
 import Button from 'Button';
@@ -16,7 +16,7 @@ class AddButton extends React.Component {
     }
 
     getSystems() {
-        return this.props.data.systems
+        return this.props.systems.data
             .sort((a, b) => a.order - b.order)
             .map(system => ({ key: system._id, label: system.name }));
     }
@@ -86,10 +86,8 @@ class AddButton extends React.Component {
 
 AddButton.propTypes = {
     createGame: PropTypes.func.isRequired,
-    data: PropTypes.shape({
-        systems: PropTypes.array,
-    }).isRequired,
+    systems: PropTypes.object.isRequired,
     toggleGame: PropTypes.func.isRequired,
 };
 
-export default graphql(GetSystems)(AddButton);
+export default graphqlQuery(GetSystems, AddButton);

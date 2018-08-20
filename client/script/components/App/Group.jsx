@@ -1,28 +1,29 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
+import graphqlQuery from 'graphqlQuery';
 import GetGames from 'queries/games/GetGames.gql';
+import GetUi from 'queries/ui/GetUi.gql';
 import Game from './Group/Game';
 
 class Group extends React.Component {
     filteredGames() {
-        let games = this.props.data.games;
+        let games = [...this.props.games.data];
 
-        if (this.props.data.ui.groupBy) {
+        if (this.props.ui.data.groupBy) {
             games = games.filter((game) => {
-                const groupBy = this.props.data.ui.groupBy === 'systemId' ?
+                const groupBy = this.props.ui.data.groupBy === 'systemId' ?
                     game.system._id :
-                    game[this.props.data.ui.groupBy];
+                    game[this.props.ui.data.groupBy];
 
                 return groupBy === this.props._id;
             });
         }
 
-        if (this.props.data.ui.genreFilter.length > 0) {
+        if (this.props.ui.data.genreFilter.length > 0) {
             games = games.filter((game) => {
                 const genres = game.genre.split(',');
 
-                return this.props.data.ui.genreFilter.every(genre => genres.includes(genre));
+                return this.props.ui.data.genreFilter.every(genre => genres.includes(genre));
             });
         }
 
@@ -57,11 +58,9 @@ class Group extends React.Component {
 
 Group.propTypes = {
     _id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-    data: PropTypes.shape({
-        games: PropTypes.array,
-        ui: PropTypes.object,
-    }).isRequired,
+    games: PropTypes.object.isRequired,
     name: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+    ui: PropTypes.object.isRequired,
 };
 
-export default graphql(GetGames)(Group);
+export default graphqlQuery([GetGames, GetUi], Group);

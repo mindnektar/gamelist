@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
+import graphqlQuery from 'graphqlQuery';
 import GetGames from 'queries/games/GetGames.gql';
 
 class Header extends React.Component {
@@ -12,7 +12,7 @@ class Header extends React.Component {
                 </div>
 
                 <div className="header__total">
-                    {this.props.data.games.length} games
+                    {this.props.games.data.length} games
                 </div>
             </div>
         );
@@ -20,9 +20,7 @@ class Header extends React.Component {
 }
 
 Header.propTypes = {
-    data: PropTypes.shape({
-        games: PropTypes.array,
-    }).isRequired,
+    games: PropTypes.object.isRequired,
 };
 
-export default graphql(GetGames)(Header);
+export default graphqlQuery(GetGames, Header);
