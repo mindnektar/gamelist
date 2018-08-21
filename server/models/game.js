@@ -4,8 +4,6 @@ const ratingDefinition = {
     type: Number,
     min: 0,
     max: 100,
-    get: rating => (rating / 10).toFixed(1),
-    set: rating => rating * 10,
 };
 
 const GameSchema = new mongoose.Schema({

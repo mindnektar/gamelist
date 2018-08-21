@@ -1,11 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
+import graphqlQuery from 'graphqlQuery';
+import GetGames from 'queries/games/GetGames.gql';
+import UpdateGame from 'queries/games/UpdateGame.gql';
+import GetSystems from 'queries/systems/GetSystems.gql';
 import classNames from 'classnames';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
-import connectWithRouter from 'hoc/connectWithRouter';
 import scrollToGame from 'helpers/scrollToGame';
-import { saveGame } from 'actions/games';
-import { toggleGame, toggleGenreFilter } from 'actions/ui';
 import Rating from './Game/Rating';
 import Editor from './Game/Editor';
 
@@ -24,16 +26,42 @@ class Game extends React.Component {
         this.editorController = controller;
     }
 
-    toggleExpanded = () => {
-        this.props.toggleGame(this.props._id);
+    expandGame = () => {
+        this.props.expandGame(this.props._id);
     }
 
     toggleEditing = () => {
         const editing = !this.state.editing;
 
         if (!editing) {
-            this.props.saveGame(this.props._id, this.editorController.getData()).then(() => {
-                scrollToGame(this.props._id);
+            const input = this.editorController.getData();
+            const system = this.props.systems.data.find(item => item._id === input.systemId);
+
+            this.props.updateGame({
+                variables: { _id: this.props._id, input },
+                optimisticResponse: {
+                    __typename: 'Mutation',
+                    updateGame: {
+                        __typename: 'Game',
+                        _id: this.props._id,
+                        ...input,
+                        system,
+                        dlcs: this.props.dlcs,
+                    },
+                },
+                update: (cache, { data: { updateGame } }) => {
+                    const { games } = cache.readQuery({ query: GetGames });
+                    const index = games.findIndex(game => game._id === this.props._id);
+
+                    games[index].system = updateGame.system;
+
+                    cache.writeQuery({
+                        query: GetGames,
+                        data: { games },
+                    });
+
+                    scrollToGame(this.props._id);
+                },
             });
         }
 
@@ -42,6 +70,7 @@ class Game extends React.Component {
 
     toggleGenreFilterHandler = genre => (event) => {
         event.stopPropagation();
+
         this.props.toggleGenreFilter(genre);
     }
 
@@ -59,7 +88,7 @@ class Game extends React.Component {
             >
                 <div
                     className="game__head"
-                    onTouchTap={this.toggleExpanded}
+                    onClick={this.expandGame}
                 >
                     <div className="game__title">
                         {this.props.title}
@@ -85,16 +114,16 @@ class Game extends React.Component {
                                     { 'game__genre-item--active': this.props.genreFilter.includes(genre) }
                                 )}
                                 key={genre}
-                                onTouchTap={this.toggleGenreFilterHandler(genre)}
+                                onClick={this.toggleGenreFilterHandler(genre)}
                             >
                                 {genre.trim()}
                             </span>
                         )}
                     </div>
 
-                    {this.props.groupBy !== 'system' &&
+                    {this.props.groupBy !== 'systemId' &&
                         <div className="game__system">
-                            {this.props.systems[this.props.systemId].name}
+                            {this.props.system.name}
                         </div>
                     }
 
@@ -128,7 +157,7 @@ class Game extends React.Component {
                             unmountOnExit
                         >
                             <div className="game__body">
-                                {this.state.editing && this.props.editing ? (
+                                {this.state.editing && this.props.location.pathname === '/edit' ? (
                                     <Editor
                                         {...this.props}
                                         controller={this.setEditorController}
@@ -137,9 +166,9 @@ class Game extends React.Component {
                                     <div className="game__info">
                                         {this.props.youTubeId ? (
                                             <iframe
+                                                allowFullScreen
                                                 className="game__video"
                                                 src={`https://www.youtube.com/embed/${this.props.youTubeId}`}
-                                                type="text/html"
                                             />
                                         ) : (
                                             <div className="game__video-placeholder" />
@@ -170,10 +199,10 @@ class Game extends React.Component {
                                     </div>
                                 )}
 
-                                {this.props.editing &&
+                                {this.props.location.pathname === '/edit' &&
                                     <div
                                         className="game__edit-button material-icons"
-                                        onTouchTap={this.toggleEditing}
+                                        onClick={this.toggleEditing}
                                     >
                                         {this.state.editing ? 'close' : 'mode_edit'}
                                     </div>
@@ -203,34 +232,20 @@ Game.propTypes = {
     description: PropTypes.string,
     developer: PropTypes.string,
     dlcs: PropTypes.array.isRequired,
-    editing: PropTypes.bool.isRequired,
     expanded: PropTypes.bool.isRequired,
+    expandGame: PropTypes.func.isRequired,
     genre: PropTypes.string,
     genreFilter: PropTypes.array.isRequired,
     groupBy: PropTypes.string.isRequired,
+    location: PropTypes.object.isRequired,
     rating: PropTypes.number,
     release: PropTypes.number,
-    saveGame: PropTypes.func.isRequired,
-    systemId: PropTypes.string.isRequired,
+    system: PropTypes.object.isRequired,
     systems: PropTypes.object.isRequired,
     title: PropTypes.string.isRequired,
-    toggleGame: PropTypes.func.isRequired,
     toggleGenreFilter: PropTypes.func.isRequired,
+    updateGame: PropTypes.func.isRequired,
     youTubeId: PropTypes.string,
 };
 
-export default connectWithRouter(
-    (state, ownProps) => ({
-        editing: ownProps.location.pathname === '/edit',
-        expanded: state.ui.expandedGame === ownProps._id,
-        genreFilter: state.ui.genreFilter,
-        groupBy: state.ui.groupBy,
-        systems: state.systems,
-    }),
-    {
-        saveGame,
-        toggleGame,
-        toggleGenreFilter,
-    },
-    Game
-);
+export default graphqlQuery([GetSystems, UpdateGame], withRouter(Game));

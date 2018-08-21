@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import connectWithRouter from 'hoc/connectWithRouter';
-import { loadGames } from 'actions/games';
-import { loadSystems } from 'actions/systems';
-import { changeGrouping } from 'actions/ui';
+import { withRouter } from 'react-router-dom';
+import graphqlQuery from 'graphqlQuery';
+import GetGames from 'queries/games/GetGames.gql';
+import GetSystems from 'queries/systems/GetSystems.gql';
 import Select from 'Select';
 import Group from './App/Group';
 import Header from './App/Header';
@@ -11,115 +11,118 @@ import AddButton from './App/AddButton';
 
 class App extends React.Component {
     state = {
-        loaded: false,
-    }
-
-    componentWillMount() {
-        Promise.all([
-            this.props.loadGames(),
-            this.props.loadSystems(),
-        ]).then(() => {
-            this.setState({ loaded: true });
-        });
+        expandedGame: null,
+        genreFilter: [],
+        groupBy: 'systemId',
     }
 
     getGroups() {
-        if (!this.props.groupBy) {
-            return [{ _id: '', name: 'All games' }];
+        const games = [...this.props.games.data];
+
+        if (!this.state.groupBy) {
+            return [{ name: 'All games', games }];
         }
 
-        if (this.props.groupBy === 'systemId') {
-            return Object.values(this.props.systems)
-                .sort((a, b) => a.order - b.order);
-        }
+        const groups = games.reduce((result, current) => {
+            const name = this.state.groupBy === 'systemId' ?
+                current.system.name :
+                current[this.state.groupBy];
 
-        return Object.values(this.props.games)
-            .reduce((result, current) => {
-                if (!result.find(group => `${group.name}` === `${current[this.props.groupBy]}`)) {
-                    return [
-                        ...result,
-                        {
-                            _id: current[this.props.groupBy],
-                            name: current[this.props.groupBy],
-                        },
-                    ];
-                }
+            if (name) {
+                result[name] = result[name] || { name, games: [], order: current.system.order };
+                result[name].games.push(current);
+            }
 
-                return result;
-            }, [])
-            .sort((a, b) => {
-                if (typeof a.name === 'number') {
-                    if (this.props.groupBy === 'rating') {
-                        return b.name - a.name;
-                    }
+            return result;
+        }, {});
 
-                    return a.name - b.name;
-                }
+        return Object.values(groups).sort((a, b) => {
+            if (this.state.groupBy === 'rating') {
+                return b.name - a.name;
+            }
 
-                return a.name.localeCompare(b.name);
-            });
+            if (this.state.groupBy === 'systemId') {
+                return a.order - b.order;
+            }
+
+            if (typeof a.name === 'number') {
+                return a.name - b.name;
+            }
+
+            return a.name.localeCompare(b.name);
+        });
     }
 
     changeGrouping = (event) => {
-        this.props.changeGrouping(event.target.value);
+        this.setState({ groupBy: event.target.value });
+    }
+
+    expandGame = (expandedGame) => {
+        this.setState({ expandedGame });
+    }
+
+    toggleGenreFilter = (genre) => {
+        const genreFilter = [...this.state.genreFilter];
+        const index = genreFilter.indexOf(genre);
+
+        if (index < 0) {
+            genreFilter.push(genre);
+        } else {
+            genreFilter.splice(index, 1);
+        }
+
+        this.setState({ genreFilter });
     }
 
     render() {
-        return this.state.loaded && (
-            <div className="gamelist">
-                <Header />
+        return (
+            !!this.props.systems.data &&
+            !!this.props.games.data && (
+                <div className="gamelist">
+                    <Header />
 
-                {this.props.editing &&
-                    <AddButton />
-                }
+                    {this.props.location.pathname === '/edit' &&
+                        <AddButton
+                            expandGame={this.expandGame}
+                        />
+                    }
 
-                <div className="gamelist__grouping">
-                    <Select
-                        items={[
-                            { key: 'system', label: 'System' },
-                            { key: 'developer', label: 'Developer' },
-                            { key: 'release', label: 'Release year' },
-                            { key: 'rating', label: 'Rating' },
-                            { key: '', label: '<none>' },
-                        ]}
-                        label="Group by"
-                        onChange={this.changeGrouping}
-                        value={this.props.groupBy}
-                    />
+                    <div className="gamelist__grouping">
+                        <Select
+                            items={[
+                                { key: 'systemId', label: 'System' },
+                                { key: 'developer', label: 'Developer' },
+                                { key: 'release', label: 'Release year' },
+                                { key: 'rating', label: 'Rating' },
+                                { key: '', label: '<none>' },
+                            ]}
+                            label="Group by"
+                            onChange={this.changeGrouping}
+                            value={this.state.groupBy}
+                        />
+                    </div>
+
+                    {this.getGroups().map(group => (
+                        <Group
+                            expandGame={this.expandGame}
+                            expandedGame={this.state.expandedGame}
+                            genreFilter={this.state.genreFilter}
+                            groupBy={this.state.groupBy}
+                            key={group.name}
+                            toggleGenreFilter={this.toggleGenreFilter}
+                            {...group}
+                        />
+                    ))}
                 </div>
-
-                {this.getGroups().map(group =>
-                    <Group
-                        key={group._id}
-                        {...group}
-                    />
-                )}
-            </div>
+            )
         );
     }
 }
 
 App.propTypes = {
-    changeGrouping: PropTypes.func.isRequired,
-    editing: PropTypes.bool.isRequired,
     games: PropTypes.object.isRequired,
-    groupBy: PropTypes.string.isRequired,
-    loadGames: PropTypes.func.isRequired,
-    loadSystems: PropTypes.func.isRequired,
+    location: PropTypes.object.isRequired,
     systems: PropTypes.object.isRequired,
 };
 
-export default connectWithRouter(
-    (state, ownProps) => ({
-        editing: ownProps.location.pathname === '/edit',
-        games: state.games,
-        groupBy: state.ui.groupBy,
-        systems: state.systems,
-    }),
-    {
-        changeGrouping,
-        loadGames,
-        loadSystems,
-    },
-    App
-);
+export default graphqlQuery([GetGames, GetSystems], withRouter(App));

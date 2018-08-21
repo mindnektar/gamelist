@@ -1,12 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import connectWithRouter from 'hoc/connectWithRouter';
 
 class Button extends React.Component {
     render() {
         return (
             <div className="ui-button">
-                <button onTouchTap={this.props.onTouchTap}>
+                <button onClick={this.props.onClick}>
                     {this.props.children}
                 </button>
             </div>
@@ -16,11 +15,7 @@ class Button extends React.Component {
 
 Button.propTypes = {
     children: PropTypes.string.isRequired,
-    onTouchTap: PropTypes.func.isRequired,
+    onClick: PropTypes.func.isRequired,
 };
 
-export default connectWithRouter(
-    null,
-    null,
-    Button
-);
+export default Button;

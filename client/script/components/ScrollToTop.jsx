@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import connectWithRouter from 'hoc/connectWithRouter';
+import { withRouter } from 'react-router-dom';
 
 class ScrollToTop extends React.Component {
     componentDidUpdate(prevProps) {
@@ -19,10 +19,4 @@ ScrollToTop.propTypes = {
     location: PropTypes.object.isRequired,
 };
 
-export default connectWithRouter(
-    (state, ownProps) => ({
-        location: ownProps.location,
-    }),
-    null,
-    ScrollToTop
-);
+export default withRouter(ScrollToTop);

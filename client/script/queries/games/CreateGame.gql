@@ -1,0 +1,7 @@
+#import './GameFields.fragment.gql'
+
+mutation CreateGame($input: CreateGameInput!) {
+    createGame(input: $input) {
+        ...GameFields
+    }
+}

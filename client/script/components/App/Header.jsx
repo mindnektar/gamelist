@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import connectWithRouter from 'hoc/connectWithRouter';
+import graphqlQuery from 'graphqlQuery';
+import GetGames from 'queries/games/GetGames.gql';
 
 class Header extends React.Component {
     render() {
@@ -11,7 +12,7 @@ class Header extends React.Component {
                 </div>
 
                 <div className="header__total">
-                    {Object.values(this.props.games).length} games
+                    {this.props.games.data.length} games
                 </div>
             </div>
         );
@@ -22,10 +23,4 @@ Header.propTypes = {
     games: PropTypes.object.isRequired,
 };
 
-export default connectWithRouter(
-    state => ({
-        games: state.games,
-    }),
-    null,
-    Header
-);
+export default graphqlQuery(GetGames, Header);

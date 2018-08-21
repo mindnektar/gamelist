@@ -4,7 +4,7 @@ module.exports = {
     context: __dirname,
 
     entry: {
-        app: './client/script/app.jsx',
+        app: ['babel-polyfill', './client/script/app.jsx'],
     },
 
     output: {
@@ -17,6 +17,7 @@ module.exports = {
         extensions: ['.js', '.jsx'],
         modules: [
             'client/script',
+            'client/script/components/hoc',
             'client/script/components/ui',
             'node_modules',
         ],
@@ -48,6 +49,14 @@ module.exports = {
                     { loader: 'css-loader', options: { url: false } },
                     { loader: 'sass-loader' },
                     { loader: 'import-glob-loader' },
+                ],
+            },
+
+            {
+                test: /\.gql$/,
+                exclude: [/node_modules/],
+                use: [
+                    { loader: 'graphql-tag/loader' },
                 ],
             },
         ],

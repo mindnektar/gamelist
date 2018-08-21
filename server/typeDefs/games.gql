@@ -1,0 +1,47 @@
+type Query {
+    game(_id: ID!): Game
+    games: [Game]!
+}
+
+type Mutation {
+    createGame(input: CreateGameInput!): Game!
+    updateGame(_id: ID!, input: UpdateGameInput!): Game!
+    prefillGame(_id: ID!, giantBombIndex: Int!): Game!
+    deleteGame(_id: ID!): Game!
+}
+
+type Game {
+    _id: ID!
+    system: System!
+    title: String!
+    rating: Int
+    genre: String
+    release: Int
+    developer: String
+    description: String
+    youTubeId: String
+    compilation: String
+    dlcs: [Dlc]
+}
+
+type Dlc {
+    title: String!
+    rating: Int
+}
+
+input CreateGameInput {
+    systemId: ID!
+    title: String!
+}
+
+input UpdateGameInput {
+    systemId: ID
+    title: String
+    rating: Int
+    genre: String
+    release: Int
+    developer: String
+    description: String
+    youTubeId: String
+    compilation: String
+}

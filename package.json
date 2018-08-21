@@ -11,8 +11,11 @@
     "postinstall": "cd server-dist && npm install"
   },
   "dependencies": {
+    "apollo-boost": "^0.1.13",
     "classnames": "2.2.5",
     "express": "^4.16.2",
+    "graphql": "^0.13.2",
+    "graphql-tag": "^2.9.2",
     "history": "^4.7.2",
     "knex": "^0.14.3",
     "object.entries": "^1.0.4",
@@ -20,6 +23,7 @@
     "pg": "^7.4.1",
     "prop-types": "^15.5.10",
     "react": "^15.6.1",
+    "react-apollo": "^2.1.11",
     "react-dom": "15.4.2",
     "react-redux": "5.0.3",
     "react-router": "^4.2.0",
@@ -50,6 +54,7 @@
     "eslint-plugin-react": "6.10.0",
     "file-loader": "^0.11.2",
     "import-glob-loader": "^1.1.0",
+    "kexec": "^3.0.0",
     "node-sass": "^4.5.2",
     "resolve-url-loader": "^2.1.0",
     "sass-loader": "^6.0.3",

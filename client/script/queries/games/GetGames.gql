@@ -1,0 +1,7 @@
+#import './GameFields.fragment.gql'
+
+query GetGames {
+    games {
+        ...GameFields
+    }
+}

@@ -1,0 +1,7 @@
+#import './GameFields.fragment.gql'
+
+mutation UpdateGame($_id: ID!, $giantBombIndex: Int!) {
+    prefillGame(_id: $_id, giantBombIndex: $giantBombIndex) {
+        ...GameFields
+    }
+}
