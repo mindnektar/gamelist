@@ -14,13 +14,13 @@ var config = convict({
         express: {
             doc: 'express server port',
             format: 'port',
-            default: 4001,
+            default: 4801,
             env: 'PORT'
         },
         webpackDevServer: {
             doc: 'webpack development server port',
             format: 'port',
-            default: 4000
+            default: 4800
         }
     },
     mongodbUri: {

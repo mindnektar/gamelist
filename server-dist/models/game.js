@@ -14,13 +14,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var ratingDefinition = {
     type: Number,
     min: 0,
-    max: 100,
-    get: function get(rating) {
-        return (rating / 10).toFixed(1);
-    },
-    set: function set(rating) {
-        return rating * 10;
-    }
+    max: 100
 };
 
 var GameSchema = new _mongoose2.default.Schema({

@@ -1,20 +1,16 @@
 'use strict';
 
-var _bodyParser = require('body-parser');
+var _express = require('express');
 
-var _bodyParser2 = _interopRequireDefault(_bodyParser);
-
-var _fs = require('fs');
-
-var _fs2 = _interopRequireDefault(_fs);
+var _express2 = _interopRequireDefault(_express);
 
 var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
 
-var _express = require('express');
+var _graphqlYoga = require('graphql-yoga');
 
-var _express2 = _interopRequireDefault(_express);
+var _mergeGraphqlSchemas = require('merge-graphql-schemas');
 
 var _config = require('./config');
 
@@ -22,24 +18,22 @@ var _config2 = _interopRequireDefault(_config);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var app = (0, _express2.default)(); /* eslint-disable no-console */
+var server = new _graphqlYoga.GraphQLServer({
+    typeDefs: (0, _mergeGraphqlSchemas.mergeTypes)((0, _mergeGraphqlSchemas.fileLoader)(_path2.default.join(__dirname, 'typeDefs'))),
+    resolvers: (0, _mergeGraphqlSchemas.mergeResolvers)((0, _mergeGraphqlSchemas.fileLoader)(_path2.default.join(__dirname, 'resolvers')))
+}); /* eslint-disable no-console */
 
 
-app.use(_bodyParser2.default.json());
-app.use(_express2.default.static(_path2.default.join(__dirname, '../public')));
+server.express.use(_express2.default.static(_path2.default.join(__dirname, '../public')));
 
-app.use(function (request, response, next) {
-    response.setHeader('Access-Control-Allow-Origin', 'http://localhost:' + _config2.default.get('ports').webpackDevServer);
-    response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    response.setHeader('Access-Control-Allow-Headers', 'content-type');
-
-    next();
-});
-
-_fs2.default.readdirSync(_path2.default.join(__dirname, 'api')).forEach(function (file) {
-    app.use('/api', require('./api/' + file).default);
-});
-
-app.listen(_config2.default.get('ports').express, function () {
+server.start({
+    port: _config2.default.get('ports').express,
+    endpoint: '/api',
+    playground: '/api'
+}, function () {
     console.log('Server running at http://localhost:' + _config2.default.get('ports').express);
+});
+
+process.on('SIGINT', function () {
+    process.exit();
 });
