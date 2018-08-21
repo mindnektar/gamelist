@@ -4,6 +4,7 @@ import graphqlQuery from 'graphqlQuery';
 import GetSystems from 'queries/systems/GetSystems.gql';
 import GetGames from 'queries/games/GetGames.gql';
 import DeleteGame from 'queries/games/DeleteGame.gql';
+import PrefillGame from 'queries/games/PrefillGame.gql';
 import TextField from 'TextField';
 import Button from 'Button';
 import Select from 'Select';
@@ -65,19 +66,22 @@ class Editor extends React.Component {
     }
 
     fillGameData = () => {
-        this.props.fillGameData(
-            this.props._id,
-            parseInt(this.state.giantBombIndex, 10)
-        ).then((game) => {
-            this.setState({
-                attributes: {
-                    ...this.state.attributes,
-                    ...editableAttributes.reduce((result, current) => ({
-                        ...result,
-                        [current]: game[current],
-                    }), {}),
-                },
-            });
+        this.props.prefillGame({
+            variables: {
+                _id: this.props._id,
+                giantBombIndex: parseInt(this.state.giantBombIndex, 10),
+            },
+            update: (cache, { data: { prefillGame } }) => {
+                this.setState({
+                    attributes: {
+                        ...this.state.attributes,
+                        ...editableAttributes.reduce((result, current) => ({
+                            ...result,
+                            [current]: current === 'systemId' ? prefillGame.system._id : prefillGame[current],
+                        }), {}),
+                    },
+                });
+            },
         });
     }
 
@@ -158,8 +162,8 @@ Editor.propTypes = {
     system: PropTypes.object.isRequired,
     systems: PropTypes.object.isRequired,
     deleteGame: PropTypes.func.isRequired,
-    fillGameData: PropTypes.func.isRequired,
+    prefillGame: PropTypes.func.isRequired,
     _id: PropTypes.string.isRequired,
 };
 
-export default graphqlQuery([GetSystems, DeleteGame], Editor);
+export default graphqlQuery([GetSystems, DeleteGame, PrefillGame], Editor);

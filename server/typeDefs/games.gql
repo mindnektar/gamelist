@@ -6,7 +6,7 @@ type Query {
 type Mutation {
     createGame(input: CreateGameInput!): Game!
     updateGame(_id: ID!, input: UpdateGameInput!): Game!
-    prefillGame(_id: ID!): Game!
+    prefillGame(_id: ID!, giantBombIndex: Int!): Game!
     deleteGame(_id: ID!): Game!
 }
 
