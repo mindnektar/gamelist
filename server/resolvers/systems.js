@@ -6,8 +6,8 @@ export default {
         systems: async () => System.find(),
     },
     Mutation: {
-        createGame: async (_, { input }) => new System(input).save(),
-        updateGame: async (_, { _id, input }) => {
+        createSystem: async (_, { input }) => new System(input).save(),
+        updateSystem: async (_, { _id, input }) => {
             const system = await System.findById(_id);
 
             if (!system) {
@@ -16,7 +16,7 @@ export default {
 
             return system.set(input).save();
         },
-        deleteGame: async (_, { _id }) => {
+        deleteSystem: async (_, { _id }) => {
             const system = await System.findById(_id);
 
             if (!system) {

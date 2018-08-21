@@ -23,7 +23,11 @@ export default {
         },
     },
     Mutation: {
-        createGame: async (_, { input }) => new Game(input).save(),
+        createGame: async (_, { input }) => {
+            const game = await Game(input).save();
+
+            return fetchGame(game._id);
+        },
         updateGame: async (_, { _id, input }) => {
             const game = await fetchGame(_id);
 

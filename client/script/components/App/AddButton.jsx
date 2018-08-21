@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import graphqlQuery from 'graphqlQuery';
 import GetSystems from 'queries/systems/GetSystems.gql';
+import GetGames from 'queries/games/GetGames.gql';
+import CreateGame from 'queries/games/CreateGame.gql';
 import scrollToGame from 'helpers/scrollToGame';
 import Button from 'Button';
 import TextField from 'TextField';
@@ -16,7 +18,7 @@ class AddButton extends React.Component {
     }
 
     getSystems() {
-        return this.props.systems.data
+        return [...this.props.systems.data]
             .sort((a, b) => a.order - b.order)
             .map(system => ({ key: system._id, label: system.name }));
     }
@@ -32,10 +34,28 @@ class AddButton extends React.Component {
     save = () => {
         this.toggleExpanded();
 
-        this.props.createGame(this.state.title, this.state.systemId).then((game) => {
-            scrollToGame(game._id);
+        this.props.createGame({
+            variables: {
+                input: {
+                    title: this.state.title,
+                    systemId: this.state.systemId,
+                },
+            },
+            update: async (cache, { data: { createGame } }) => {
+                await cache.writeQuery({
+                    query: GetGames,
+                    data: {
+                        games: [
+                            ...cache.readQuery({ query: GetGames }).games,
+                            createGame,
+                        ],
+                    },
+                });
 
-            this.props.toggleGame(game._id);
+                scrollToGame(createGame._id);
+
+                this.props.expandGame(createGame._id);
+            },
         });
     }
 
@@ -86,8 +106,8 @@ class AddButton extends React.Component {
 
 AddButton.propTypes = {
     createGame: PropTypes.func.isRequired,
+    expandGame: PropTypes.func.isRequired,
     systems: PropTypes.object.isRequired,
-    toggleGame: PropTypes.func.isRequired,
 };
 
-export default graphqlQuery(GetSystems, AddButton);
+export default graphqlQuery([GetSystems, CreateGame], AddButton);

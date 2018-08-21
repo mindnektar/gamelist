@@ -1,0 +1,7 @@
+#import './GameFields.fragment.gql'
+
+mutation UpdateGame($_id: ID!, $input: UpdateGameInput!) {
+    updateGame(_id: $_id, input: $input) {
+        ...GameFields
+    }
+}

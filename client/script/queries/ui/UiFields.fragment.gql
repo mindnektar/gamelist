@@ -1,5 +1,0 @@
-fragment UiFields on Ui {
-    expandedGame
-    genreFilter
-    groupBy
-}

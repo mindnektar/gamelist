@@ -1,7 +1,0 @@
-#import "./UiFields.fragment.gql"
-
-mutation UpdateUi($input: UpdateUiInput!) {
-    updateUi(input: $input) @client {
-        ...UiFields
-    }
-}

@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import graphqlQuery from 'graphqlQuery';
 import GetSystems from 'queries/systems/GetSystems.gql';
+import GetGames from 'queries/games/GetGames.gql';
+import DeleteGame from 'queries/games/DeleteGame.gql';
 import TextField from 'TextField';
 import Button from 'Button';
 import Select from 'Select';
@@ -15,7 +17,7 @@ class Editor extends React.Component {
     state = {
         attributes: editableAttributes.reduce((result, current) => ({
             ...result,
-            [current]: this.props[current],
+            [current]: current === 'systemId' ? this.props.system._id : this.props[current],
         }), {}),
         giantBombIndex: 0,
     }
@@ -27,7 +29,7 @@ class Editor extends React.Component {
     }
 
     getSystems() {
-        return this.props.systems.data
+        return [...this.props.systems.data]
             .sort((a, b) => a.order - b.order)
             .map(system => ({ key: system._id, label: system.name }));
     }
@@ -37,7 +39,29 @@ class Editor extends React.Component {
     }
 
     deleteGame = () => {
-        this.props.deleteGame(this.props._id);
+        this.props.deleteGame({
+            variables: {
+                _id: this.props._id,
+            },
+            optimisticResponse: {
+                __typename: 'Mutation',
+                deleteGame: {
+                    __typename: 'Game',
+                    _id: this.props._id,
+                },
+            },
+            update: (cache, { data: { deleteGame } }) => {
+                cache.writeQuery({
+                    query: GetGames,
+                    data: {
+                        games: [
+                            ...cache.readQuery({ query: GetGames }).games
+                                .filter(game => game._id !== deleteGame._id),
+                        ],
+                    },
+                });
+            },
+        });
     }
 
     fillGameData = () => {
@@ -78,14 +102,12 @@ class Editor extends React.Component {
     }
 
     renderInput = (type) => {
-        const label = type[0].toUpperCase() + type.substring(1);
-
         if (type === 'systemId') {
             return (
                 <Select
                     items={this.getSystems()}
                     key={type}
-                    label={label}
+                    label={type}
                     onChange={this.editHandler(type)}
                     value={this.state.attributes[type]}
                 />
@@ -95,7 +117,7 @@ class Editor extends React.Component {
         return (
             <TextField
                 key={type}
-                label={label}
+                label={type}
                 onBlur={this.blurHandler(type)}
                 onChange={this.editHandler(type)}
             >
@@ -133,10 +155,11 @@ class Editor extends React.Component {
 
 Editor.propTypes = {
     controller: PropTypes.func.isRequired,
+    system: PropTypes.object.isRequired,
     systems: PropTypes.object.isRequired,
     deleteGame: PropTypes.func.isRequired,
     fillGameData: PropTypes.func.isRequired,
     _id: PropTypes.string.isRequired,
 };
 
-export default graphqlQuery(GetSystems, Editor);
+export default graphqlQuery([GetSystems, DeleteGame], Editor);

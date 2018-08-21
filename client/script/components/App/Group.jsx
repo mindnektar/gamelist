@@ -1,18 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import graphqlQuery from 'graphqlQuery';
-import GetUi from 'queries/ui/GetUi.gql';
 import Game from './Group/Game';
 
 class Group extends React.Component {
     filteredGames() {
         let games = this.props.games;
 
-        if (this.props.ui.data.genreFilter.length > 0) {
+        if (this.props.genreFilter.length > 0) {
             games = games.filter((game) => {
+                if (!game.genre) {
+                    return false;
+                }
+
                 const genres = game.genre.split(',');
 
-                return this.props.ui.data.genreFilter.every(genre => genres.includes(genre));
+                return this.props.genreFilter.every(genre => genres.includes(genre));
             });
         }
 
@@ -21,6 +23,10 @@ class Group extends React.Component {
 
     render() {
         const games = this.filteredGames();
+
+        if (games.length === 0) {
+            return null;
+        }
 
         return (
             <div className="group">
@@ -36,7 +42,12 @@ class Group extends React.Component {
 
                 {games.map(game =>
                     <Game
+                        expandGame={this.props.expandGame}
+                        expanded={this.props.expandedGame === game._id}
+                        genreFilter={this.props.genreFilter}
+                        groupBy={this.props.groupBy}
                         key={game._id}
+                        toggleGenreFilter={this.props.toggleGenreFilter}
                         {...game}
                     />
                 )}
@@ -45,10 +56,18 @@ class Group extends React.Component {
     }
 }
 
-Group.propTypes = {
-    games: PropTypes.array.isRequired,
-    name: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-    ui: PropTypes.object.isRequired,
+Group.defaultProps = {
+    expandedGame: null,
 };
 
-export default graphqlQuery(GetUi, Group);
+Group.propTypes = {
+    expandGame: PropTypes.func.isRequired,
+    expandedGame: PropTypes.string,
+    games: PropTypes.array.isRequired,
+    genreFilter: PropTypes.array.isRequired,
+    groupBy: PropTypes.string.isRequired,
+    name: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+    toggleGenreFilter: PropTypes.func.isRequired,
+};
+
+export default Group;

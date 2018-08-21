@@ -4,28 +4,32 @@ import { withRouter } from 'react-router-dom';
 import graphqlQuery from 'graphqlQuery';
 import GetGames from 'queries/games/GetGames.gql';
 import GetSystems from 'queries/systems/GetSystems.gql';
-import GetUi from 'queries/ui/GetUi.gql';
-import UpdateUi from 'queries/ui/UpdateUi.gql';
 import Select from 'Select';
 import Group from './App/Group';
 import Header from './App/Header';
 import AddButton from './App/AddButton';
 
 class App extends React.Component {
+    state = {
+        expandedGame: null,
+        genreFilter: [],
+        groupBy: 'systemId',
+    }
+
     getGroups() {
         const games = [...this.props.games.data];
 
-        if (!this.props.ui.data.groupBy) {
+        if (!this.state.groupBy) {
             return [{ name: 'All games', games }];
         }
 
         const groups = games.reduce((result, current) => {
-            const name = this.props.ui.data.groupBy === 'systemId' ?
+            const name = this.state.groupBy === 'systemId' ?
                 current.system.name :
-                current[this.props.ui.data.groupBy];
+                current[this.state.groupBy];
 
             if (name) {
-                result[name] = result[name] || { name, games: [] };
+                result[name] = result[name] || { name, games: [], order: current.system.order };
                 result[name].games.push(current);
             }
 
@@ -33,11 +37,15 @@ class App extends React.Component {
         }, {});
 
         return Object.values(groups).sort((a, b) => {
-            if (typeof a.name === 'number') {
-                if (this.props.ui.data.groupBy === 'rating') {
-                    return b.name - a.name;
-                }
+            if (this.state.groupBy === 'rating') {
+                return b.name - a.name;
+            }
 
+            if (this.state.groupBy === 'systemId') {
+                return a.order - b.order;
+            }
+
+            if (typeof a.name === 'number') {
                 return a.name - b.name;
             }
 
@@ -46,25 +54,37 @@ class App extends React.Component {
     }
 
     changeGrouping = (event) => {
-        this.props.updateUi({
-            variables: {
-                input: {
-                    groupBy: event.target.value,
-                },
-            },
-        });
+        this.setState({ groupBy: event.target.value });
+    }
+
+    expandGame = (expandedGame) => {
+        this.setState({ expandedGame });
+    }
+
+    toggleGenreFilter = (genre) => {
+        const genreFilter = [...this.state.genreFilter];
+        const index = genreFilter.indexOf(genre);
+
+        if (index < 0) {
+            genreFilter.push(genre);
+        } else {
+            genreFilter.splice(index, 1);
+        }
+
+        this.setState({ genreFilter });
     }
 
     render() {
         return (
             !!this.props.systems.data &&
-            !!this.props.games.data &&
-            !!this.props.ui.data && (
+            !!this.props.games.data && (
                 <div className="gamelist">
                     <Header />
 
                     {this.props.location.pathname === '/edit' &&
-                        <AddButton />
+                        <AddButton
+                            expandGame={this.expandGame}
+                        />
                     }
 
                     <div className="gamelist__grouping">
@@ -78,13 +98,18 @@ class App extends React.Component {
                             ]}
                             label="Group by"
                             onChange={this.changeGrouping}
-                            value={this.props.ui.data.groupBy}
+                            value={this.state.groupBy}
                         />
                     </div>
 
                     {this.getGroups().map(group => (
                         <Group
+                            expandGame={this.expandGame}
+                            expandedGame={this.state.expandedGame}
+                            genreFilter={this.state.genreFilter}
+                            groupBy={this.state.groupBy}
                             key={group.name}
+                            toggleGenreFilter={this.toggleGenreFilter}
                             {...group}
                         />
                     ))}
@@ -98,8 +123,6 @@ App.propTypes = {
     games: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     systems: PropTypes.object.isRequired,
-    ui: PropTypes.object.isRequired,
-    updateUi: PropTypes.func.isRequired,
 };
 
-export default graphqlQuery([GetGames, GetSystems, GetUi, UpdateUi], withRouter(App));
+export default graphqlQuery([GetGames, GetSystems], withRouter(App));

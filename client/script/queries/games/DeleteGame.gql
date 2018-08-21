@@ -1,0 +1,5 @@
+mutation DeleteGame($_id: ID!) {
+    deleteGame(_id: $_id) {
+        _id
+    }
+}

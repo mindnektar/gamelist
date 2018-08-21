@@ -1,22 +1,7 @@
+#import './GameFields.fragment.gql'
+
 query GetGames {
     games {
-        _id
-        system {
-            _id
-            name
-            order
-        }
-        title
-        rating
-        genre
-        release
-        developer
-        description
-        youTubeId
-        compilation
-        dlcs {
-            title
-            rating
-        }
+        ...GameFields
     }
 }

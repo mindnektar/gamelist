@@ -4,7 +4,7 @@ module.exports = {
     context: __dirname,
 
     entry: {
-        app: './client/script/app.jsx',
+        app: ['babel-polyfill', './client/script/app.jsx'],
     },
 
     output: {
