@@ -1,13 +1,23 @@
 "use strict";
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+var _defineProperty2 = require("babel-runtime/helpers/defineProperty");
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+var _defineProperty3 = _interopRequireDefault(_defineProperty2);
+
+var _extends3 = require("babel-runtime/helpers/extends");
+
+var _extends4 = _interopRequireDefault(_extends3);
+
+var _promise = require("babel-runtime/core-js/promise");
+
+var _promise2 = _interopRequireDefault(_promise);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 module.exports = function (knex, table) {
     return knex.select().from(table).then(function (data) {
-        return Promise.resolve(data.reduce(function (result, current) {
-            return _extends({}, result, _defineProperty({}, current.id, current));
+        return _promise2.default.resolve(data.reduce(function (result, current) {
+            return (0, _extends4.default)({}, result, (0, _defineProperty3.default)({}, current.id, current));
         }, {}));
     });
 };

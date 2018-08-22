@@ -4,7 +4,17 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
+
+var _regenerator = require('babel-runtime/regenerator');
+
+var _regenerator2 = _interopRequireDefault(_regenerator);
+
+var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
+
+var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
 var _axios = require('axios');
 
@@ -20,12 +30,10 @@ var _system = require('../models/system');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
-
 var fetchGame = function () {
-    var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(_id) {
+    var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(_id) {
         var game;
-        return regeneratorRuntime.wrap(function _callee$(_context) {
+        return _regenerator2.default.wrap(function _callee$(_context) {
             while (1) {
                 switch (_context.prev = _context.next) {
                     case 0:
@@ -57,9 +65,9 @@ var fetchGame = function () {
 exports.default = {
     Query: {
         game: function () {
-            var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(_, _ref2) {
+            var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(_, _ref2) {
                 var _id = _ref2._id;
-                return regeneratorRuntime.wrap(function _callee2$(_context2) {
+                return _regenerator2.default.wrap(function _callee2$(_context2) {
                     while (1) {
                         switch (_context2.prev = _context2.next) {
                             case 0:
@@ -80,9 +88,9 @@ exports.default = {
             return game;
         }(),
         games: function () {
-            var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
+            var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3() {
                 var games, systems;
-                return regeneratorRuntime.wrap(function _callee3$(_context3) {
+                return _regenerator2.default.wrap(function _callee3$(_context3) {
                     while (1) {
                         switch (_context3.prev = _context3.next) {
                             case 0:
@@ -97,7 +105,7 @@ exports.default = {
                             case 5:
                                 systems = _context3.sent;
                                 return _context3.abrupt('return', games.map(function (game) {
-                                    return _extends({}, game.toObject(), {
+                                    return (0, _extends3.default)({}, game.toObject(), {
                                         system: systems.find(function (system) {
                                             return system._id.equals(game.systemId);
                                         })
@@ -121,10 +129,10 @@ exports.default = {
     },
     Mutation: {
         createGame: function () {
-            var _ref6 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(_, _ref5) {
+            var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(_, _ref5) {
                 var input = _ref5.input;
                 var game;
-                return regeneratorRuntime.wrap(function _callee4$(_context4) {
+                return _regenerator2.default.wrap(function _callee4$(_context4) {
                     while (1) {
                         switch (_context4.prev = _context4.next) {
                             case 0:
@@ -150,11 +158,11 @@ exports.default = {
             return createGame;
         }(),
         updateGame: function () {
-            var _ref8 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(_, _ref7) {
+            var _ref8 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(_, _ref7) {
                 var _id = _ref7._id,
                     input = _ref7.input;
                 var game;
-                return regeneratorRuntime.wrap(function _callee5$(_context5) {
+                return _regenerator2.default.wrap(function _callee5$(_context5) {
                     while (1) {
                         switch (_context5.prev = _context5.next) {
                             case 0:
@@ -189,11 +197,11 @@ exports.default = {
             return updateGame;
         }(),
         prefillGame: function () {
-            var _ref10 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(_, _ref9) {
+            var _ref10 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(_, _ref9) {
                 var _id = _ref9._id,
                     giantBombIndex = _ref9.giantBombIndex;
                 var game, GIANTBOMB_KEY, YOUTUBE_KEY, youTubeSearch, giantBombSearch, guid, giantBombGame, input;
-                return regeneratorRuntime.wrap(function _callee6$(_context6) {
+                return _regenerator2.default.wrap(function _callee6$(_context6) {
                     while (1) {
                         switch (_context6.prev = _context6.next) {
                             case 0:
@@ -269,10 +277,10 @@ exports.default = {
             return prefillGame;
         }(),
         deleteGame: function () {
-            var _ref12 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee7(_, _ref11) {
+            var _ref12 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7(_, _ref11) {
                 var _id = _ref11._id;
                 var game;
-                return regeneratorRuntime.wrap(function _callee7$(_context7) {
+                return _regenerator2.default.wrap(function _callee7$(_context7) {
                     while (1) {
                         switch (_context7.prev = _context7.next) {
                             case 0:
