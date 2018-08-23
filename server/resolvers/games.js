@@ -3,35 +3,19 @@ import developerMap from '../helpers/developerMap';
 import { Game } from '../models/game';
 import { System } from '../models/system';
 
-const fetchGame = async (_id) => {
-    const game = await Game.findById(_id);
-
-    game.system = await System.findById(game.systemId);
-
-    return game;
-};
-
 export default {
     Query: {
-        game: async (_, { _id }) => fetchGame(_id),
-        games: async () => {
-            const games = await Game.find();
-            const systems = await System.find();
-
-            return games.map(game => ({
-                ...game.toObject(),
-                system: systems.find(system => system._id.equals(game.systemId)),
-            }));
-        },
+        game: async (_, { _id }) => Game.findById(_id),
+        games: async () => Game.find(),
     },
     Mutation: {
         createGame: async (_, { input }) => {
             const game = await Game(input).save();
 
-            return fetchGame(game._id);
+            return Game.findById(game._id);
         },
         updateGame: async (_, { _id, input }) => {
-            const game = await fetchGame(_id);
+            const game = await Game.findById(_id);
 
             if (!game) {
                 throw new Error('notFound');
@@ -40,7 +24,7 @@ export default {
             return game.set(input).save();
         },
         prefillGame: async (_, { _id, giantBombIndex }) => {
-            const game = await fetchGame(_id);
+            const game = await Game.findById(_id);
             const GIANTBOMB_KEY = 'aebe8a5bc71b49509966b5ea50e7951d79d99cd8';
             const YOUTUBE_KEY = 'AIzaSyCC-9pROIO9leCFfkqlkfDR5wjMihZtvcA';
             const youTubeSearch = await axios.get('https://www.googleapis.com/youtube/v3/search', {
@@ -92,7 +76,7 @@ export default {
             return game.set(input).save();
         },
         deleteGame: async (_, { _id }) => {
-            const game = await fetchGame(_id);
+            const game = await Game.findById(_id);
 
             if (!game) {
                 throw new Error('notFound');
@@ -100,5 +84,8 @@ export default {
 
             return game.remove();
         },
+    },
+    Game: {
+        system: async parent => System.findById(parent.systemId),
     },
 };
