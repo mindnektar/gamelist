@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import graphqlQuery from 'graphqlQuery';
+import { createHandler } from 'helpers/apollo';
 import GetSystems from 'queries/systems/GetSystems.gql';
 import GetGames from 'queries/games/GetGames.gql';
 import CreateGame from 'queries/games/CreateGame.gql';
@@ -34,28 +35,15 @@ class AddButton extends React.Component {
     save = () => {
         this.toggleExpanded();
 
-        this.props.createGame({
-            variables: {
-                input: {
-                    title: this.state.title,
-                    systemId: this.state.systemId,
-                },
+        this.props.createGame(createHandler('Game', GetGames, {
+            input: {
+                title: this.state.title,
+                systemId: this.state.systemId,
             },
-            update: async (cache, { data: { createGame } }) => {
-                await cache.writeQuery({
-                    query: GetGames,
-                    data: {
-                        games: [
-                            ...cache.readQuery({ query: GetGames }).games,
-                            createGame,
-                        ],
-                    },
-                });
+        })).then(({ data: { createGame } }) => {
+            scrollToGame(createGame._id);
 
-                scrollToGame(createGame._id);
-
-                this.props.expandGame(createGame._id);
-            },
+            this.props.expandGame(createGame._id);
         });
     }
 

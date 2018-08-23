@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import graphqlQuery from 'graphqlQuery';
+import { deleteHandler } from 'helpers/apollo';
 import GetSystems from 'queries/systems/GetSystems.gql';
 import GetGames from 'queries/games/GetGames.gql';
 import DeleteGame from 'queries/games/DeleteGame.gql';
@@ -40,29 +41,9 @@ class Editor extends React.Component {
     }
 
     deleteGame = () => {
-        this.props.deleteGame({
-            variables: {
-                _id: this.props._id,
-            },
-            optimisticResponse: {
-                __typename: 'Mutation',
-                deleteGame: {
-                    __typename: 'Game',
-                    _id: this.props._id,
-                },
-            },
-            update: (cache, { data: { deleteGame } }) => {
-                cache.writeQuery({
-                    query: GetGames,
-                    data: {
-                        games: [
-                            ...cache.readQuery({ query: GetGames }).games
-                                .filter(game => game._id !== deleteGame._id),
-                        ],
-                    },
-                });
-            },
-        });
+        this.props.deleteGame(deleteHandler('Game', GetGames, {
+            _id: this.props._id,
+        }));
     }
 
     fillGameData = () => {
@@ -71,17 +52,16 @@ class Editor extends React.Component {
                 _id: this.props._id,
                 giantBombIndex: parseInt(this.state.giantBombIndex, 10),
             },
-            update: (cache, { data: { prefillGame } }) => {
-                this.setState({
-                    attributes: {
-                        ...this.state.attributes,
-                        ...editableAttributes.reduce((result, current) => ({
-                            ...result,
-                            [current]: current === 'systemId' ? prefillGame.system._id : prefillGame[current],
-                        }), {}),
-                    },
-                });
-            },
+        }).then(({ data: { prefillGame } }) => {
+            this.setState({
+                attributes: {
+                    ...this.state.attributes,
+                    ...editableAttributes.reduce((result, current) => ({
+                        ...result,
+                        [current]: current === 'systemId' ? prefillGame.system._id : prefillGame[current],
+                    }), {}),
+                },
+            });
         });
     }
 
