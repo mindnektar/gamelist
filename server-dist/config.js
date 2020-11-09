@@ -31,7 +31,7 @@ var config = convict({
             }
         },
         default: 'mongodb://localhost:27017/completed-games',
-        env: 'MONGODB_URI'
+        env: 'DB_URI'
     }
 });
 
