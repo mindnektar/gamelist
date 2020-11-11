@@ -1,5 +1,8 @@
 {
   "private": true,
+  "engines": {
+    "node": "11.14.0"
+  },
   "scripts": {
     "webpack-dev-server": "webpack-dev-server --config webpack.config.dev.js",
     "express-server": "nodemon --exec babel-node -- server/app.js -w server --presets env --plugins transform-object-rest-spread",
