@@ -19,6 +19,6 @@
     "mongoose-id-validator": "^0.4.3",
     "node-sass": "^5.0.0",
     "serialize-error": "^2.1.0",
-    "validator": "^9.4.1"
+    "validator": "^13.7.0"
   }
 }
